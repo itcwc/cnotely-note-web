@@ -45,7 +45,7 @@ export default {
     onMounted(() => {
       // 初始化 Editor.md
       const editor = editormd("editor-container", {
-        path: "https://cnote.itcwc.com/libs/editor.md/lib/",
+        path: "/libs/editor.md/lib/",
         width: "100%",
         height: props.height,
         theme: props.editorTheme,
@@ -92,7 +92,7 @@ export default {
 
       // 编辑器语言选项
       var editLanguage = props.editLanguage;
-      var path = "https://cnote.itcwc.com/libs/editor.md/languages/";
+      var path = "/libs/editor.md/languages/";
       if (editLanguage == "zh_CN") {
         editLanguage = "zh-cn";
       }
@@ -113,7 +113,7 @@ export default {
             editor.setPreviewTheme(newPreviewAreaTheme);
 
             // 动态加载语言包并更新语言
-            const langPath = "https://cnote.itcwc.com/libs/editor.md/languages/"; // 根据实际路径调整
+            const langPath = "/libs/editor.md/languages/"; // 根据实际路径调整
             editormd.loadScript(`${langPath}${editLanguage}.js`, () => {
               if (editormd.defaults.lang) {
                 editor.lang = editormd.defaults.lang;
