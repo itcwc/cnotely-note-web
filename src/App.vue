@@ -1,6 +1,6 @@
 <template>
   <!-- <div id="app"> -->
-  <nav class="navbar">
+  <!-- <nav class="navbar">
     <div class="navbar-left">
       <router-link to="/">
         <img src="/src/assets/images/logo.png" alt="Logo" class="logo" />
@@ -33,7 +33,7 @@
         </select>
       </div>
     </div>
-  </nav>
+  </nav> -->
   <router-view></router-view>
   <!-- 渲染当前路由的组件 -->
   <!-- </div> -->

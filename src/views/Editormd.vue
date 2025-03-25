@@ -51,7 +51,7 @@ export default {
         theme: props.editorTheme,
         previewTheme: props.previewAreaTheme,
         editorTheme: props.editorAreaTheme,
-        markdown: "### Welcome to Editor.md!",
+        markdown: props.value,
         codeFold: true,
         syncScrolling: "single",
         toolbar: true,
