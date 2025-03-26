@@ -7,6 +7,8 @@ import { createI18n } from "vue-i18n";
 import en from "./locales/en.json";
 import zhCN from "./locales/zh-CN.json";
 
+import 'element-plus/dist/index.css'
+
 const app = createApp(App);
 // 创建 i18n 实例
 export const i18n = createI18n({

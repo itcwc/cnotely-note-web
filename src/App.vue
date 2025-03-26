@@ -71,6 +71,10 @@ export default {
 </script>
 
 <style>
+body{
+  margin: 0;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;

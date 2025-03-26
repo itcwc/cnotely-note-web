@@ -46,7 +46,8 @@ export default {
       // 初始化 Editor.md
       const editor = editormd("editor-container", {
         path: "/libs/editor.md/lib/",
-        width: "100%",
+        width: "99%",
+        height: "100%",
         height: props.height,
         theme: props.editorTheme,
         previewTheme: props.previewAreaTheme,

@@ -6,7 +6,8 @@
     "Login": "Login - CNote",
     "Settings": "Settings - CNote",
     "Register": "Register - CNote",
-    "ForgotPassword": "ForgotPassword - CNote"
+    "ForgotPassword": "ForgotPassword - CNote",
+    "Compile": "Compile - CNote"
   },
   "home": "Home",
   "editor": "Editor",
