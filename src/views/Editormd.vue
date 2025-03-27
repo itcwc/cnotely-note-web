@@ -17,7 +17,6 @@ export default {
     editorTheme: { type: String, default: "default" },
     editorAreaTheme: { type: String, default: "default" },
     previewAreaTheme: { type: String, default: "default" },
-
   },
 
   setup(props) {
