@@ -1,7 +1,7 @@
 <template>
     <div class="md-editor">
         <Editormd 
-            v-model:value="selectedFile.content" 
+            v-model:value="selectedFile.content"
             :height="height"
             :editLanguage="editLanguage"
             :editorTheme="editorTheme"
@@ -29,7 +29,7 @@ export default {
         Editormd
     },
     setup() {
-        const selectedFile = ref({ content: "初始内容" });
+        const selectedFile = ref({ content: "# 初始内容" });
         const height = "100%";
         const editLanguage = ref(localStorage.getItem("selectedLanguage") || "en");
         const editorTheme = localStorage.getItem("editorTheme") ?? "default";
@@ -130,11 +130,11 @@ export default {
             exportFile,
         };
     },
-    data() {
-        return {
-            selectedFile: { content: "# ccc" },
-        }
-    }
+    // data() {
+    //     return {
+    //         selectedFile: { content: "# ccc" },
+    //     }
+    // }
 }
 </script>
 

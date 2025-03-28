@@ -17,51 +17,58 @@ export default {
     editorTheme: { type: String, default: "default" },
     editorAreaTheme: { type: String, default: "default" },
     previewAreaTheme: { type: String, default: "default" },
+    imageUploadURL: { type: String, default: "/upload/path" }, // 动态配置图片上传路径
   },
 
-  setup(props) {
-
+  emits: ['update:value'],
+  setup(props, { emit }) {
     function themeSelect(id, themes, lsKey, callback) {
-      var select = $("#" + id);
-      for (var i = 0, len = themes.length; i < len; i++) {
-        var theme = themes[i];
-        var selected = localStorage[lsKey] == theme ? ' selected="selected"' : "";
-        select.append(
-          '<option value="' + theme + '"' + selected + ">" + theme + "</option>"
-        );
+      const select = document.getElementById(id);
+      if (!select) return;
+
+      const savedTheme = localStorage.getItem(lsKey) || "";
+      for (const theme of themes) {
+        const option = document.createElement("option");
+        option.value = theme;
+        option.textContent = theme;
+        if (theme === savedTheme) {
+          option.selected = true;
+        }
+        select.appendChild(option);
       }
-      select.bind("change", function () {
-        var theme = $(this).val();
-        if (theme === "") {
-          alert('theme == ""');
+
+      select.addEventListener("change", (event) => {
+        const theme = event.target.value;
+        if (!theme) {
+          alert("Invalid theme selected.");
           return false;
         }
         callback(select, theme);
       });
+
       return select;
     }
 
     onMounted(() => {
-      // 初始化 Editor.md
-      const editor = editormd("editor-container", {
-        path: "/libs/editor.md/lib/",
-        width: "99%",
-        height: "100%",
-        height: props.height,
-        theme: props.editorTheme,
-        previewTheme: props.previewAreaTheme,
-        editorTheme: props.editorAreaTheme,
-        markdown: props.value,
-        codeFold: true,
-        syncScrolling: "single",
-        toolbar: true,
-        saveHTMLToTextarea: true,
-        imageUpload: true,
-        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-        imageUploadURL: "/upload/path", // 替换成你的图片上传接口
-        // lang: currentLang, // 初始化语言
-        toolbarIcons: function () {
-          return [
+      let editor = null;
+
+      try {
+        editor = window.editormd("editor-container", {
+          path: "/libs/editor.md/lib/",
+          width: "99%",
+          height: props.height, // 修复重复定义问题
+          theme: props.editorTheme,
+          previewTheme: props.previewAreaTheme,
+          editorTheme: props.editorAreaTheme,
+          markdown: props.value,
+          codeFold: true,
+          syncScrolling: "single",
+          toolbar: true,
+          saveHTMLToTextarea: true,
+          imageUpload: true,
+          imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+          imageUploadURL: props.imageUploadURL, // 动态配置
+          toolbarIcons: () => [
             "bold",
             "italic",
             "pagebreak",
@@ -85,77 +92,79 @@ export default {
             "|",
             "preview",
             "watch",
-            "fullscreen"
-          ];
-        },
-      });
+            "fullscreen",
+          ],
+        });
 
-      // 编辑器语言选项
-      var editLanguage = props.editLanguage;
-      var path = "/libs/editor.md/languages/";
-      if (editLanguage == "zh_CN") {
-        editLanguage = "zh-cn";
+        // 监听内容变化并触发事件
+        editor.on("change", () => {
+          emit('update:value', editor.getMarkdown());
+        });
+      } catch (error) {
+        console.error("Editor initialization failed:", error);
       }
-      editormd.loadScript(path + editLanguage, function () {
-        editor.lang = editormd.defaults.lang;
-      });
 
+      const loadLanguagePack = (language) => {
+        const langPath = `/libs/editor.md/languages/${language}.js`;
+        return new Promise((resolve, reject) => {
+          window.editormd.loadScript(langPath, () => {
+            if (window.editormd.defaults.lang) {
+              resolve();
+            } else {
+              reject(new Error(`Failed to load language pack: ${language}`));
+            }
+          });
+        });
+      };
 
-
-      // 监听主题变化，动态更新配置
       watch(
         () => [props.editLanguage, props.editorTheme, props.editorAreaTheme, props.previewAreaTheme],
-        ([editLanguage, newEditorTheme, newEditorAreaTheme, newPreviewAreaTheme]) => {
-          if (editor) {
-            // 更新主题
+        async ([editLanguage, newEditorTheme, newEditorAreaTheme, newPreviewAreaTheme]) => {
+          if (!editor) return;
+
+          try {
             editor.setTheme(newEditorTheme);
             editor.setEditorTheme(newEditorAreaTheme);
             editor.setPreviewTheme(newPreviewAreaTheme);
 
-            // 动态加载语言包并更新语言
-            const langPath = "/libs/editor.md/languages/"; // 根据实际路径调整
-            editormd.loadScript(`${langPath}${editLanguage}.js`, () => {
-              if (editormd.defaults.lang) {
-                editor.lang = editormd.defaults.lang;
-                editor.recreate(); // 重建编辑器以更新语言
-                console.log(`语言切换为：${editLanguage}`);
-              } else {
-                console.error(`语言包加载失败：${editLanguage}`);
-              }
-            });
+            const normalizedLang = editLanguage === "zh_CN" ? "zh-cn" : editLanguage;
+            await loadLanguagePack(normalizedLang);
+            editor.lang = window.editormd.defaults.lang;
+            editor.recreate();
+            console.log(`Language switched to: ${editLanguage}`);
+          } catch (error) {
+            console.error("Failed to update editor configuration:", error);
           }
         }
       );
 
       themeSelect(
         "editormd-theme-select",
-        editormd.themes,
+        window.editormd.themes,
         "theme",
-        function ($this, theme) {
-          editor.setTheme(theme);
+        (select, theme) => {
+          if (editor) editor.setTheme(theme);
         }
       );
 
       themeSelect(
         "editor-area-theme-select",
-        editormd.editorThemes,
+        window.editormd.editorThemes,
         "editorTheme",
-        function ($this, theme) {
-          editor.setCodeMirrorTheme(theme);
+        (select, theme) => {
+          if (editor) editor.setCodeMirrorTheme(theme);
         }
       );
 
       themeSelect(
         "preview-area-theme-select",
-        editormd.previewThemes,
+        window.editormd.previewThemes,
         "previewTheme",
-        function ($this, theme) {
-          editor.setPreviewTheme(theme);
+        (select, theme) => {
+          if (editor) editor.setPreviewTheme(theme);
         }
       );
-
     });
-
   },
 };
 </script>
