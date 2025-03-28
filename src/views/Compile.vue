@@ -1,13 +1,7 @@
 <template>
     <div class="md-editor">
-        <Editormd 
-            v-model:value="selectedFile.content"
-            :height="height"
-            :editLanguage="editLanguage"
-            :editorTheme="editorTheme"
-            :editorAreaTheme="editorAreaTheme"
-            :previewAreaTheme="previewAreaTheme"
-            />
+        <Editormd v-model:value="selectedFile.content" :height="height" :editLanguage="editLanguage"
+            :editorTheme="editorTheme" :editorAreaTheme="editorAreaTheme" :previewAreaTheme="previewAreaTheme" />
     </div>
 
     <div class="menu">
@@ -16,11 +10,11 @@
         </el-select>
         <el-button class="export-btn" type="primary" @click="exportFile">导出</el-button>
     </div>
-
 </template>
 
 <script>
 import { ref } from "vue";
+import { saveAs } from "file-saver";
 import Editormd from "./Editormd.vue";
 
 export default {
@@ -29,7 +23,7 @@ export default {
         Editormd
     },
     setup() {
-        const selectedFile = ref({ content: "# 初始内容" });
+        const selectedFile = ref({ content: "# CNote" });
         const height = "100%";
         const editLanguage = ref(localStorage.getItem("selectedLanguage") || "en");
         const editorTheme = localStorage.getItem("editorTheme") ?? "default";
@@ -68,7 +62,7 @@ export default {
 
             const content = selectedFile.value.content;
 
-            console.log(format, content);
+            // console.log(format, content);
 
             switch (format) {
                 case 'md':
@@ -91,9 +85,13 @@ export default {
             }
         };
 
-        const exportMarkdown = () => {
+        const exportMarkdown = (content) => {
             // 导出为 Markdown 格式的逻辑
-            console.log('Exporting as Markdown');
+            // console.log('Exporting as Markdown');
+            const mdBlob = new Blob([content], {
+                type: "text/markdown;charset=utf-8",
+            });
+            saveAs(mdBlob, "note.md");
         };
 
 
@@ -102,10 +100,14 @@ export default {
             console.log('Exporting as PDF');
         };
 
-        const exportHtml = () => {
+
+        const exportHtml = (content) => {
             // 导出为 HTML 格式的逻辑
             console.log('Exporting as HTML');
+            console.log(content);
         };
+
+
 
         const exportDocx = () => {
             // 导出为 DOCX 格式的逻辑
