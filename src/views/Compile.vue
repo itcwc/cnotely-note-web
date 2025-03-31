@@ -116,9 +116,16 @@ export default {
             console.log('Exporting as DOCX');
         };
 
-        const exportTxt = () => {
+        const exportTxt = (content) => {
             // 导出为 TXT 格式的逻辑
             console.log('Exporting as TXT');
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = content;
+            const textContent = tempDiv.textContent || tempDiv.innerText || "";
+            const txtBlob = new Blob([textContent], {
+                type: "text/plain;charset=utf-8",
+            });
+            saveAs(txtBlob, "note.txt");
         };
 
 
