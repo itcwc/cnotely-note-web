@@ -87,7 +87,7 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import Editormd from "./Editormd.vue";
+import Editormd from "../components/Editormd.vue";
 import { useI18n } from "vue-i18n";
 
 export default {

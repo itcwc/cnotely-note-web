@@ -47,7 +47,7 @@
 <script>
 import { ref } from "vue";
 import FileTreeItem from "./FileTreeItem.vue";
-import Editormd from "./Editormd.vue";
+import Editormd from "../components/Editormd.vue";
 export default {
   name: "ParentComponent",
   components: {

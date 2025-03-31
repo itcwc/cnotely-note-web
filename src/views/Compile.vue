@@ -10,12 +10,17 @@
         </el-select>
         <el-button class="export-btn" type="primary" @click="exportFile">导出</el-button>
     </div>
+
+    <!-- <div id="content"> -->
+    <div id="mdtohtml" style="display:none;"></div>
+    <!-- </div> -->
+
 </template>
 
 <script>
 import { ref } from "vue";
 import { saveAs } from "file-saver";
-import Editormd from "./Editormd.vue";
+import Editormd from "../components/Editormd.vue";
 
 export default {
     name: "Compile",
@@ -30,39 +35,19 @@ export default {
         const editorAreaTheme = localStorage.getItem("editorAreaTheme") ?? "default";
         const previewAreaTheme = localStorage.getItem("previewAreaTheme") ?? "default";
 
-
-
         const options = [
-            {
-                value: 'md',
-                label: '导出 .md 格式',
-            },
-            {
-                value: 'pdf',
-                label: '导出 .pdf 格式',
-            },
-            {
-                value: 'html',
-                label: '导出 .html 格式',
-            },
-            {
-                value: 'docx',
-                label: '导出 .docx 格式',
-            },
-            {
-                value: 'txt',
-                label: '导出 .txt 格式',
-            },
-        ]
+            { value: 'md', label: '导出 .md 格式' },
+            { value: 'pdf', label: '导出 .pdf 格式' },
+            { value: 'html', label: '导出 .html 格式' },
+            { value: 'docx', label: '导出 .docx 格式' },
+            { value: 'txt', label: '导出 .txt 格式' }
+        ];
         const selectValue = ref(options[0].value)
         const exportFile = () => {
 
             // 获取导出格式的值，用于后续处理导出内容的格式
             const format = selectValue.value;
-
             const content = selectedFile.value.content;
-
-            // console.log(format, content);
 
             switch (format) {
                 case 'md':
@@ -104,7 +89,24 @@ export default {
         const exportHtml = (content) => {
             // 导出为 HTML 格式的逻辑
             console.log('Exporting as HTML');
-            console.log(content);
+            editormd.markdownToHTML("mdtohtml", {
+                markdown: content,
+                htmlDecode: "style,script,iframe",
+                emoji: true,
+                taskList: true,
+                tex: true,
+                flowChart: true,
+                sequenceDiagram: true,
+            });
+
+            var htmlContent = $('#content').html();
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'note.html';
+            a.click();
+            URL.revokeObjectURL(url);
         };
 
 
