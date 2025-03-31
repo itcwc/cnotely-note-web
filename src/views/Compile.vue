@@ -11,10 +11,7 @@
         <el-button class="export-btn" type="primary" @click="exportFile">导出</el-button>
     </div>
 
-    <!-- <div id="content"> -->
     <div id="mdtohtml" style="display:none;"></div>
-    <!-- </div> -->
-
 </template>
 
 <script>
@@ -72,7 +69,7 @@ export default {
 
         const exportMarkdown = (content) => {
             // 导出为 Markdown 格式的逻辑
-            // console.log('Exporting as Markdown');
+            console.log('Exporting as Markdown');
             const mdBlob = new Blob([content], {
                 type: "text/markdown;charset=utf-8",
             });
@@ -98,8 +95,8 @@ export default {
                 flowChart: true,
                 sequenceDiagram: true,
             });
-
-            var htmlContent = $('#content').html();
+            
+            var htmlContent = '<link rel="stylesheet" href="https://cnote.itcwc.com/libs/editor.md/css/editormd.min.css">' + $('#mdtohtml').html();
             const blob = new Blob([htmlContent], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -108,8 +105,6 @@ export default {
             a.click();
             URL.revokeObjectURL(url);
         };
-
-
 
         const exportDocx = () => {
             // 导出为 DOCX 格式的逻辑
@@ -140,12 +135,7 @@ export default {
             options,
             exportFile,
         };
-    },
-    // data() {
-    //     return {
-    //         selectedFile: { content: "# ccc" },
-    //     }
-    // }
+    }
 }
 </script>
 
