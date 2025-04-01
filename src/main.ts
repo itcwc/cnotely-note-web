@@ -8,6 +8,7 @@ import en from "./locales/en.json";
 import zhCN from "./locales/zh-CN.json";
 
 import 'element-plus/dist/index.css'
+import './assets/css/global.css';
 
 const app = createApp(App);
 // 创建 i18n 实例
