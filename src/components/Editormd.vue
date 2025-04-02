@@ -20,7 +20,10 @@ export default {
     imageUploadURL: { type: String, default: "/upload/path" }, // 动态配置图片上传路径
   },
 
-  emits: ['update:value'],
+  emits: [
+      'update:value',
+      // 'update:html'
+    ],
   setup(props, { emit }) {
     function themeSelect(id, themes, lsKey, callback) {
       const select = document.getElementById(id);
@@ -56,6 +59,9 @@ export default {
         editor = window.editormd("editor-container", {
           path: "/libs/editor.md/lib/",
           width: "99%",
+          tex: true,
+          flowChart: true,
+          sequenceDiagram: true,
           height: props.height, // 修复重复定义问题
           theme: props.editorTheme,
           previewTheme: props.previewAreaTheme,
@@ -68,6 +74,8 @@ export default {
           imageUpload: true,
           imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
           imageUploadURL: props.imageUploadURL, // 动态配置
+          katexURL: {
+          },
           toolbarIcons: () => [
             "bold",
             "italic",
@@ -98,8 +106,14 @@ export default {
 
         // 监听内容变化并触发事件
         editor.on("change", () => {
-          emit('update:value', editor.getMarkdown());
+          const markdownContent = editor.getMarkdown();
+          // const htmlContent = editor.getHTML();
+          emit('update:value', markdownContent); // 传递 markdown 内容
+          // emit('update:html', htmlContent); // 传递 html 内容
+          // console.log(htmlContent);
         });
+
+
       } catch (error) {
         console.error("Editor initialization failed:", error);
       }

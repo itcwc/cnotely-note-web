@@ -16,7 +16,7 @@
 
 <script>
 import { ref } from "vue";
-import { marked } from 'marked';
+// import { marked } from 'marked';
 import { saveAs } from "file-saver";
 import Editormd from "../components/Editormd.vue";
 import { ElMessageBox, ElMessage } from 'element-plus'
@@ -30,6 +30,7 @@ export default {
     },
     setup() {
         const selectedFile = ref({ content: "# CNote" });
+        const htmlContent = ref(""); // 用于存储从 Editormd.vue 传递过来的 HTML 内容
         const height = "100%";
         const editLanguage = ref(localStorage.getItem("selectedLanguage") || "en");
         const editorTheme = localStorage.getItem("editorTheme") ?? "default";
@@ -44,21 +45,22 @@ export default {
             { value: 'txt', label: '导出 .txt 格式' }
         ];
         const selectValue = ref(options[0].value)
+        // const updateHtml = (newHtml) => {
+        //     htmlContent.value = newHtml; // 更新 HTML 内容
+        // };
         const exportFile = () => {
 
             // 获取导出格式的值，用于后续处理导出内容的格式
             const format = selectValue.value;
-            const content = selectedFile.value.content;
 
             switch (format) {
                 case 'md':
-                    exportMarkdown(content);
+                    exportMarkdown(selectedFile.value.content);
                     break;
                 case 'pdf':
-                    exportPdf(content);
+                    exportPdf(htmlContent.value);
                     break;
                 case 'html':
-
                     const message = `
                         <div>
                             请选择导出的 HTML 主题：
@@ -76,25 +78,27 @@ export default {
                         confirmButtonClass: 'export-hmd-cbtn'
                     })
                         .then(() => {
-                            exportHtml(content, 'dark')
+                            exportHtml(selectedFile.value.content, 'dark')
                         })
                         .catch(() => {
-                            exportHtml(content, 'light')
+                            exportHtml(selectedFile.value.content, 'light')
                         })
+
                     break;
                 case 'docx':
-                    exportDocx(content);
+                    exportDocx(htmlContent.value);
                     break;
                 case 'txt':
-                    exportTxt(content);
+                    exportTxt(selectedFile.value.content);
                     break;
                 default:
                     console.error('Unsupported format');
             }
         };
 
+        // 导出为 Markdown 格式的逻辑
         const exportMarkdown = (content) => {
-            // 导出为 Markdown 格式的逻辑
+
             console.log('Exporting as Markdown');
             const mdBlob = new Blob([content], {
                 type: "text/markdown;charset=utf-8",
@@ -102,30 +106,26 @@ export default {
             saveAs(mdBlob, "note.md");
         };
 
+        // 导出为 TXT 格式的逻辑
+        const exportTxt = (content) => {
 
-        const exportPdf = async (content) => {
-            // 导出为 PDF 格式的逻辑
+            console.log('Exporting as TXT');
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = content;
+            const textContent = tempDiv.textContent || tempDiv.innerText || "";
+            const txtBlob = new Blob([textContent], {
+                type: "text/plain;charset=utf-8",
+            });
+            saveAs(txtBlob, "note.txt");
+        };
+
+        // 导出为 PDF 格式的逻辑
+        const exportPdf = async (htmlContent) => {
+
             console.log("Exporting as PDF");
 
-            const themeCssUrl = "https://cnote.itcwc.com/notion-style-light.css";
-            const htmlContent = marked.parse(content);
-            const fullHtml = `
-                <!DOCTYPE html>
-                <html lang="zh">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Exported Document</title>
-                    <link rel="stylesheet" href="${themeCssUrl}">
-                    <style>
-                        body { font-family: Arial, sans-serif; }
-                        .pdf-content { padding: 20px; background: white; }
-                    </style>
-                </head>
-                <body>
-                    <div class="pdf-content">${htmlContent}</div>
-                </body>
-                </html>`;
+            const themeCssUrl = "/notion-style-light.css";
+            let fullHtml = generateFullHtml(htmlContent, themeCssUrl);
 
             // 创建隐藏的 DOM 容器
             const container = document.createElement("div");
@@ -177,28 +177,28 @@ export default {
             pdf.save("note.pdf");
         };
 
-
+        // 导出为 HTML 格式的逻辑
         const exportHtml = (content, theme) => {
-            // 导出为 HTML 格式的逻辑
             console.log('Exporting as HTML');
 
-            let themeCssUrl = 'https://cnote.itcwc.com/notion-style-light.css';
-            if (theme == 'dark') { themeCssUrl = 'https://cnote.itcwc.com/notion-style-dark.css' }
-            const htmlContent = marked.parse(content);
-            const fullHtml = `
-                <!DOCTYPE html>
-                <html lang="zh">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Exported Document</title>
-                    <link rel="stylesheet" href="${themeCssUrl}">
-                </head>
-                <body>
-                    ${htmlContent}
-                </body>
-                </html>`;
+            let themeCssUrl = '/notion-style-light.css';
+            if (theme == 'dark') { themeCssUrl = '/notion-style-dark.css' }
+            console.log(111);
 
+            editormd.markdownToHTML("mdtohtml", {
+                markdown: content,
+                htmlDecode: "style,script,iframe",
+                tocm: true,
+                tocContainer: "#custom-toc-container",
+                taskList: true,
+                tex: true,
+                flowChart: true,
+                sequenceDiagram: true,
+            });
+            var htmlContent = document.getElementById("mdtohtml").innerHTML;
+            console.log(htmlContent);
+
+            let fullHtml = generateFullHtml(htmlContent, themeCssUrl);
             const blob = new Blob([fullHtml], { type: 'text/html' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -206,16 +206,18 @@ export default {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+
         };
 
-        const exportDocx = (content) => {
-            // 导出为 DOCX 格式的逻辑
+        // 导出为 DOCX 格式的逻辑
+        const exportDocx = (htmlContent) => {
             console.log('Exporting as DOCX');
+            let themeCssUrl = '/notion-style-light.css';
+            let fullHtml = generateFullHtml(htmlContent, themeCssUrl);
+        };
 
-            let themeCssUrl = 'https://cnote.itcwc.com/notion-style-light.css';
-            // if (theme == 'dark') { themeCssUrl = 'https://cnote.itcwc.com/notion-style-dark.css' }
-            const htmlContent = marked.parse(content);
-            const fullHtml = `
+        const generateFullHtml = (htmlContent, themeCssUrl) => {
+            return `
                 <!DOCTYPE html>
                 <html lang="zh">
                 <head>
@@ -229,19 +231,6 @@ export default {
                 </body>
                 </html>`;
         };
-
-        const exportTxt = (content) => {
-            // 导出为 TXT 格式的逻辑
-            console.log('Exporting as TXT');
-            const tempDiv = document.createElement("div");
-            tempDiv.innerHTML = content;
-            const textContent = tempDiv.textContent || tempDiv.innerText || "";
-            const txtBlob = new Blob([textContent], {
-                type: "text/plain;charset=utf-8",
-            });
-            saveAs(txtBlob, "note.txt");
-        };
-
 
         return {
             selectedFile,
@@ -252,7 +241,7 @@ export default {
             previewAreaTheme,
             selectValue,
             options,
-            exportFile,
+            exportFile
         };
     }
 }
