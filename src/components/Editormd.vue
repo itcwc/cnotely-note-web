@@ -119,7 +119,7 @@ export default {
       }
 
       const loadLanguagePack = (language) => {
-        const langPath = `/libs/editor.md/languages/${language}.js`;
+        const langPath = `/libs/editor.md/languages/${language}`;
         return new Promise((resolve, reject) => {
           window.editormd.loadScript(langPath, () => {
             if (window.editormd.defaults.lang) {

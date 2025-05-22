@@ -1,76 +1,50 @@
 <template>
   <div class="settings">
-    <div class="card">
-      <p id="setting">⚙ 设置</p>
-      <hr>
+    <el-card shadow="hover" class="settings-card">
+      <template #header>
+        <span id="setting">⚙ 设置</span>
+        <el-button type="primary" @click="goBack" style="float:right;">返回编辑页</el-button>
+      </template>
 
       <div class="language">
         <label id="select_language" for="languageSelect">选择语言：</label>
-        <select v-model="selectedLanguage" @change="changeLanguage" class="language-select select">
-          <option value="en">English</option>
-          <option value="zh-CN">中文</option>
-        </select>
+        <el-select v-model="selectedLanguage" @change="changeLanguage" class="language-select">
+          <el-option value="en" label="English"></el-option>
+          <el-option value="zh-CN" label="中文"></el-option>
+        </el-select>
       </div>
-      <hr>
-
-      <!-- 主题设置 -->
+      <el-divider />
       <div class="theme-preview">
-        <p>选择主题：</p>
-
-        <!-- 简约风 -->
-        <label>
-          <input type="radio" name="theme" value="theme-light" />
-          <div class="theme-card theme-light">
-            <div class="navbar">导航条</div>
-            <div class="content">
-              <p>字体颜色预览</p>
-              <div class="card">卡片背景预览</div>
-            </div>
-          </div>
-        </label>
-
-        <!-- 深色护眼 -->
-        <label>
-          <input type="radio" name="theme" value="theme-dark" />
-          <div class="theme-card theme-dark">
-            <div class="navbar">导航条</div>
-            <div class="content">
-              <p>字体颜色预览</p>
-              <div class="card">卡片背景预览</div>
-            </div>
-          </div>
-        </label>
-
-        <!-- 科技风 -->
-        <label>
-          <input type="radio" name="theme" value="theme-tech" />
-          <div class="theme-card theme-tech">
-            <div class="navbar">导航条</div>
-            <div class="content">
-              <p>字体颜色预览</p>
-              <div class="card">卡片背景预览</div>
-            </div>
-          </div>
-        </label>
+        <label id="select_language" for="languageSelect">选择主题：</label>
+        <el-switch v-model="isDarkTheme" active-text="黑色主题" inactive-text="白色主题" :active-icon="Moon"
+          :inactive-icon="Sunny" @change="toggleTheme"></el-switch>
       </div>
-      <br>
-      <hr>
+
+
+
+
+
+      <el-divider />
 
       <div class="themes">
-        <p id="theme_label">编辑器主题：</p>
-        <p>
-          <select v-model="editorTheme" @change="saveTheme('editorTheme', editorTheme)" id="editormd-theme-select">
-            <option selected="selected" value="">select Editor.md themes</option>
-          </select>
-          <select v-model="editorAreaTheme" @change="saveTheme('editorAreaTheme', editorAreaTheme)"
-            id="editor-area-theme-select">
-            <option selected="selected" value="">select editor area themes</option>
-          </select>
-          <select v-model="previewAreaTheme" @change="saveTheme('previewAreaTheme', previewAreaTheme)"
-            id="preview-area-theme-select">
-            <option selected="selected" value="">select preview area themes</option>
-          </select>
-        </p>
+        <label id="theme_label">编辑器主题：</label>
+        <!-- 编辑器主题选择 -->
+        <el-select v-model="editorTheme" @change="savelocalStorage('editorTheme', editorTheme)" placeholder="选择编辑器主题"
+          class="theme-select">
+          <el-option v-for="theme in editorThemes" :key="theme" :label="theme" :value="theme" />
+        </el-select>
+
+        <!-- 编辑区域主题选择 -->
+        <el-select v-model="editorAreaTheme" @change="savelocalStorage('editorAreaTheme', editorAreaTheme)"
+          placeholder="选择编辑区主题" class="theme-select">
+          <el-option v-for="theme in areaThemes" :key="theme" :label="theme" :value="theme" />
+        </el-select>
+
+        <!-- 预览区域主题选择 -->
+        <el-select v-model="previewAreaTheme" @change="savelocalStorage('previewAreaTheme', previewAreaTheme)"
+          placeholder="选择预览区主题" class="theme-select">
+          <el-option v-for="theme in previewThemes" :key="theme" :label="theme" :value="theme" />
+        </el-select>
       </div>
 
       <div id="test-editormd">
@@ -78,207 +52,191 @@
           :editorAreaTheme="editorAreaTheme" :previewAreaTheme="previewAreaTheme" />
       </div>
 
-      <button @click="saveSettings">保存配置到云</button>
-      <button @click="remakeSettings">重制</button>
-
-    </div>
+      <div class="actions">
+        <el-button type="success" @click="saveSettings">保存配置到云</el-button>
+        <el-button type="danger" @click="remakeSettings">重制</el-button>
+      </div>
+    </el-card>
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from "vue";
+<script setup>
+import { ref } from "vue";
 import Editormd from "../components/Editormd.vue";
 import { useI18n } from "vue-i18n";
+import { ElButton, ElSwitch, ElSelect, ElOption,ElMessage } from 'element-plus';
+import { Sunny, Moon } from '@element-plus/icons-vue';
 
-export default {
-  name: "Settings",
-
-  components: {
-    Editormd
-  },
-
-  setup() {
-
-    // 语言切换部分  ---------------------
-    const { locale } = useI18n();
-    // 从缓存中获取已保存的语言设置，如果没有则使用默认语言
-    const savedLanguage = localStorage.getItem("selectedLanguage");
-    const selectedLanguage = savedLanguage || "en"; // 默认设置为英文
-    // 将选中的语言设置到 locale 中
-    locale.value = selectedLanguage;
-    // 语言切换函数
-    const changeLanguage = (event) => {
-      const newLanguage = event.target.value;
-      locale.value = newLanguage; // 更新 locale
-      // 将新的语言设置保存到缓存
-      localStorage.setItem("selectedLanguage", newLanguage);
-    };
-    // 语言切换部分end ---------------------
-
-
-    // 编辑器主题设置部分 ---------------------
-    // 初始化主题设置，优先从缓存读取 
-    const selectedFile = ref({ content: "初始内容" });
-    const height = "200";
-    const editLanguage = ref(savedLanguage || "en");
-    const editorTheme = ref(localStorage.getItem("editorTheme") || "default");
-    const editorAreaTheme = ref(localStorage.getItem("editorAreaTheme") || "default");
-    const previewAreaTheme = ref(localStorage.getItem("previewAreaTheme") || "default");
-
-    // 添加到缓存中
-    const saveTheme = (key, value) => {
-      localStorage.setItem(key, value);
-    };
-    // 编辑器主题设置部分end ---------------------
-
-    return {
-      selectedFile,
-      height,
-      editLanguage,
-      editorTheme,
-      editorAreaTheme,
-      previewAreaTheme,
-      saveTheme,
-      selectedLanguage,
-      changeLanguage,
-    };
-
-  },
-
-  methods: {
-    saveSettings() {
-      // 保存设置逻辑
-      alert("暂未上线");
-    },
-
-    remakeSettings() {
-      // 重置设置逻辑
-
-      location.reload()
-
-      localStorage.clear();
-
-      alert("重制成功");
-    },
-  }
+import { useRouter } from 'vue-router';
+const router = useRouter();
+const goBack = () => {
+  router.push('/');
 };
+
+
+// 语言设置内容
+const { locale } = useI18n();
+const savedLanguage = localStorage.getItem("selectedLanguage");
+const selectedLanguage = ref(savedLanguage || "en");
+locale.value = selectedLanguage.value;
+const editLanguage = ref(savedLanguage || "en");
+const changeLanguage = (event) => {
+  const newLanguage = event;
+  locale.value = newLanguage;
+  savelocalStorage('selectedLanguage', newLanguage);
+  editLanguage.value = newLanguage;
+};
+
+// 网站整体主题设置内容
+const isDarkTheme = ref(localStorage.getItem('theme') === 'dark');
+document.documentElement.classList.toggle('dark', localStorage.getItem('theme') === 'dark');
+const toggleTheme = (value) => {
+  const theme = value ? 'dark' : 'light';
+  document.documentElement.classList.toggle('dark', value);
+  savelocalStorage('theme', theme);
+  if (theme === 'dark') {
+    editorTheme.value = "dark";
+    editorAreaTheme.value = "lesser-dark";
+    previewAreaTheme.value = "dark";
+    savelocalStorage('editorTheme', "dark")
+    savelocalStorage('editorAreaTheme', "lesser-dark")
+    savelocalStorage('previewAreaTheme', "dark")
+  } else if (theme === 'light') {
+    editorTheme.value = "default";
+    editorAreaTheme.value = "default";
+    previewAreaTheme.value = "default";
+    savelocalStorage('editorTheme', "default")
+    savelocalStorage('editorAreaTheme', "default")
+    savelocalStorage('previewAreaTheme', "default")
+  }
+
+};
+
+
+// 编辑器主题设置内容
+const editorThemes = [
+  'default',
+  'dark',
+];
+
+const areaThemes = [
+  "default",
+  "3024-day",
+  "3024-night",
+  "ambiance",
+  "ambiance-mobile",
+  "base16-dark",
+  "base16-light",
+  "blackboard",
+  "cobalt",
+  "eclipse",
+  "elegant",
+  "erlang-dark",
+  "lesser-dark",
+  "mbo",
+  "mdn-like",
+  "midnight",
+  "monokai",
+  "neat",
+  "neo",
+  "night",
+  "paraiso-dark",
+  "paraiso-light",
+  "pastel-on-dark",
+  "rubyblue",
+  "solarized",
+  "the-matrix",
+  "tomorrow-night-eighties",
+  "twilight",
+  "vibrant-ink",
+  "xq-dark",
+  "xq-light"
+];
+
+const previewThemes = [
+  'default',
+  'dark'
+];
+
+const selectedFile = ref({ content: "### 这里是一些设置内容" });
+const height = "200";
+const editorTheme = ref(localStorage.getItem("editorTheme") || "default");
+const editorAreaTheme = ref(localStorage.getItem("editorAreaTheme") || "default");
+const previewAreaTheme = ref(localStorage.getItem("previewAreaTheme") || "default");
+
+// 保存到 localStorage
+const savelocalStorage = (key, value) => {
+  localStorage.setItem(key, value);
+};
+
+// 方法可以直接定义为函数
+function saveSettings() {
+  ElMessage({
+    message: '暂未上线',
+    type: 'warning',
+    duration: 2000
+  });
+}
+
+function remakeSettings() {
+  localStorage.clear();
+  ElMessage({
+    message: '重制成功',
+    type: 'success',
+    duration: 2000
+  });
+
+  // 延迟2秒后重新加载页面，让消息有时间显示
+  setTimeout(() => {
+    location.reload();
+  }, 2000);
+}
 </script>
 
 <style scoped>
-.card {
-  background-color: white;
+.settings {
+  font-family: Arial, sans-serif;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
+}
+
+.language,
+.theme-preview,
+.themes,
+.actions {
   margin-bottom: 20px;
 }
 
-.settings {
-  font-family: Arial, sans-serif;
-  margin: 10px 0 0 0;
+#setting {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+select {
+  padding: 4px 8px;
+}
+
+.actions button {
+  margin-right: 10px;
 }
 
 .language {
   margin: 20px 0;
 }
 
-
-
 #setting {
   font-size: 22px;
 }
 
-
-/* 全局变量 */
-:root {
-  --background-color: white;
-  --font-color: black;
-  --card-background-color: #f9f9f9;
-  --navbar-background-color: #007bff;
-}
-
-/* 卡片通用样式 */
-.theme-card {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 10px 0;
-  width: 200px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  display: inline-block;
-}
-
-/* 导航条 */
-.theme-card .navbar {
-  background-color: var(--navbar-background-color);
-  color: white;
-  padding: 10px;
-  text-align: center;
-}
-
-/* 内容 */
-.theme-card .content {
-  background-color: var(--background-color);
-  color: var(--font-color);
-  padding: 20px;
-  text-align: center;
-}
-
-/* 卡片背景 */
-.theme-card .content .card {
-  background-color: var(--card-background-color);
-  border-radius: 4px;
-  padding: 10px;
-  margin-top: 10px;
-  color: var(--font-color);
-}
-
-/* 主题1：简约风 */
-.theme-light {
-  background-color: white;
-  --background-color: white;
-  --font-color: black;
-  --card-background-color: #f9f9f9;
-  --navbar-background-color: #007bff;
-}
-
-/* 主题2：深色护眼 */
-.theme-dark {
-  background-color: #333333;
-  --background-color: #333333;
-  --font-color: white;
-  --card-background-color: #444444;
-  --navbar-background-color: #004b91;
-}
-
-/* 主题3：科技风 */
-.theme-tech {
-  background-color: #1e1e1e;
-  --background-color: #1e1e1e;
-  --font-color: #aaaaaa;
-  --card-background-color: #2a2a2a;
-  --navbar-background-color: #1a73e8;
-}
-
-span {
-  font-size: 14px;
-}
-
-select {
-  padding: 5px;
-  margin-left: 10px;
-  font-size: 16px;
-}
-
 button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100px;
   margin: 10px 10px 0 0;
+}
+
+.language-select {
+  width: 180px;
+}
+
+.theme-select {
+  width: 180px;
+  margin-right: 10px;
 }
 </style>

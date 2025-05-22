@@ -9,6 +9,7 @@ import zhCN from "./locales/zh-CN.json";
 
 import 'element-plus/dist/index.css'
 import './assets/css/global.css';
+import 'element-plus/theme-chalk/dark/css-vars.css';
 
 const app = createApp(App);
 // 创建 i18n 实例
