@@ -19,11 +19,7 @@
         <el-switch v-model="isDarkTheme" active-text="黑色主题" inactive-text="白色主题" :active-icon="Moon"
           :inactive-icon="Sunny" @change="toggleTheme"></el-switch>
       </div>
-
-
-
-
-
+      
       <el-divider />
 
       <div class="themes">

@@ -4,17 +4,27 @@
             :editorTheme="editorTheme" :editorAreaTheme="editorAreaTheme" :previewAreaTheme="previewAreaTheme" />
     </div>
 
-    <el-card class="menu" shadow="hover" body-style="{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px' }">
-        <el-select v-model="selectValue" placeholder="Select" class="export-select">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-        <el-button class="export-btn" type="primary" @click="exportFile">导出</el-button>
-        <el-button class="save-to-cloud" type="primary" @click="saveCloud">保存到云</el-button>
-        <el-link href="https://www.markdown.cn/docs/cheat-sheet/" target="_blank" :underline="false">Markdown笔记使用指南</el-link>
-        <el-link href="https://www.markdownguide.org/basic-syntax/" target="_blank" :underline="false">Markdown笔记使用指南-英文版</el-link>
-        <el-link href="/settings" target="_blank" :underline="false" id="settings-link">
-            <img src="/gear-icon.png" alt="Settings" id="settings-icon" style="vertical-align: middle;">
-        </el-link>
+    <el-card class="menu" shadow="always">
+        <div class="menu-toolbar">
+            <el-select v-model="selectValue" placeholder="Select" class="export-select">
+                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select>
+            <el-button class="export-btn" type="primary" @click="exportFile">导出</el-button>
+            <el-button class="save-to-cloud" type="primary" @click="saveCloud">保存到云</el-button>
+            <el-link href="https://www.markdown.cn/docs/cheat-sheet/" target="_blank" :underline="false">
+                Markdown笔记使用指南
+            </el-link>
+            <el-link href="https://www.markdownguide.org/basic-syntax/" target="_blank" :underline="false">
+                Markdown笔记使用指南-英文版
+            </el-link>
+
+            <!-- 设置按钮在右侧 -->
+            <div class="settings-link">
+                <el-link href="/settings" target="_blank" :underline="false" id="settings-link">
+                    <Setting style="vertical-align: middle; width: 20px; height: 20px;" />
+                </el-link>
+            </div>
+        </div>
     </el-card>
 
     <!-- <div class="menu">
@@ -33,7 +43,7 @@
             </a>
         </div>
     </div> -->
-    
+
     <div id="mdtohtml" style="display:none;"></div>
 </template>
 
@@ -48,6 +58,7 @@ import {
     exportHtml,
     exportDocx
 } from "../../utils/export";
+import { Setting } from '@element-plus/icons-vue';
 
 // const isDarkTheme = ref(localStorage.getItem('theme') === 'dark');
 document.documentElement.classList.toggle('dark', localStorage.getItem('theme') === 'dark');
@@ -142,8 +153,8 @@ const saveCloud = () => {
     z-index: 1001;
 }
 
-/* .menu {
-    height: 30px;
+.menu {
+    /* height: 30px;
     position: fixed;
     bottom: 0;
     left: 0;
@@ -151,8 +162,32 @@ const saveCloud = () => {
     background: #fff;
     padding: 10px;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 1000;
-} */
+    z-index: 1000; */
+    /* display: 'flex'; */
+    /* alignItems: 'center'; */
+    /* gap: '10px'; */
+    /* padding: '10px'; */
+    height: 50px;
+}
+
+.menu>>>.el-card__body {
+    padding: 10px;
+}
+
+.menu-toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.settings-link {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    /* 推到最右边 */
+}
 
 .export-select {
     width: 180px;
