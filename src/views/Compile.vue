@@ -142,7 +142,7 @@ const saveCloud = () => {
     z-index: 1001;
 }
 
-.menu {
+/* .menu {
     height: 30px;
     position: fixed;
     bottom: 0;
@@ -152,7 +152,7 @@ const saveCloud = () => {
     padding: 10px;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-}
+} */
 
 .export-select {
     width: 180px;
