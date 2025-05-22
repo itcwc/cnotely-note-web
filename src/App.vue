@@ -71,8 +71,14 @@ export default {
 </script>
 
 <style>
-body{
+/* html.dark {
+  background-color: #121212;
+  color: #eee;
+} */
+
+body {
   margin: 0;
+  font-size: 14px;
 }
 
 .navbar {

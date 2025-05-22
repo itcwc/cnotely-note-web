@@ -24,11 +24,11 @@ const routes = [
   // { path: '/', name: 'Home', component: Home },
   // { path: '/editor', name: 'Editor', component: Editor },
   // { path: '/sync', name: 'Sync', component: Sync },
-  // { path: '/settings', name: 'Settings', component: Settings },
+  { path: '/settings', name: 'Settings', component: Settings },
   // { path: '/login', name: 'Login', component: Login },
   // { path: '/register', name: 'Register', component: Register },
   // { path: '/forgot-password', name: 'ForgotPassword', component: ForgotPassword },
-  { path: '/', name: 'Compile', component: Compile },
+  { path: '/', name: 'Compile', component: Compile }
 ];
 
 // 创建路由实例
