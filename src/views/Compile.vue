@@ -4,7 +4,20 @@
             :editorTheme="editorTheme" :editorAreaTheme="editorAreaTheme" :previewAreaTheme="previewAreaTheme" />
     </div>
 
-    <div class="menu">
+    <el-card class="menu" shadow="hover" body-style="{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px' }">
+        <el-select v-model="selectValue" placeholder="Select" class="export-select">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-button class="export-btn" type="primary" @click="exportFile">导出</el-button>
+        <el-button class="save-to-cloud" type="primary" @click="saveCloud">保存到云</el-button>
+        <el-link href="https://www.markdown.cn/docs/cheat-sheet/" target="_blank" :underline="false">Markdown笔记使用指南</el-link>
+        <el-link href="https://www.markdownguide.org/basic-syntax/" target="_blank" :underline="false">Markdown笔记使用指南-英文版</el-link>
+        <el-link href="/settings" target="_blank" :underline="false" id="settings-link">
+            <img src="/gear-icon.png" alt="Settings" id="settings-icon" style="vertical-align: middle;">
+        </el-link>
+    </el-card>
+
+    <!-- <div class="menu">
         <el-select v-model="selectValue" placeholder="Select" class="export-select">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -19,7 +32,7 @@
                 <img src="/gear-icon.png" alt="Settings" id="settings-icon">
             </a>
         </div>
-    </div>
+    </div> -->
     
     <div id="mdtohtml" style="display:none;"></div>
 </template>
@@ -129,7 +142,7 @@ const saveCloud = () => {
     z-index: 1001;
 }
 
-/* .menu {
+.menu {
     height: 30px;
     position: fixed;
     bottom: 0;
@@ -139,7 +152,7 @@ const saveCloud = () => {
     padding: 10px;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-} */
+}
 
 .export-select {
     width: 180px;
