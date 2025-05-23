@@ -1,1 +1,1 @@
-{"root":["./src/app.vue","./src/i18n.ts","./src/main.ts","./src/shims-vue.d.ts","./src/vite-env.d.ts","./src/components/editormd.vue","./src/router/index.ts","./src/views/compile.vue","./src/views/settings.vue","./src/views/zh-cn/home.vue"],"version":"5.8.2"}
+{"root":["./src/app.vue","./src/i18n.ts","./src/main.ts","./src/shims-vue.d.ts","./src/vite-env.d.ts","./src/components/editormd.vue","./src/router/index.ts","./src/views/compile.vue","./src/views/settings.vue"],"version":"5.8.2"}

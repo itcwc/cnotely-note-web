@@ -1,18 +1,13 @@
-
 import { defineConfig } from 'vite';
-import { fileURLToPath } from 'url';
 import vue from '@vitejs/plugin-vue';
 import { resolve, dirname } from 'path';
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import AutoImport from 'unplugin-auto-import/vite';
+import Components from 'unplugin-vue-components/vite';
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
+import { fileURLToPath } from 'url';
 
-// 手动定义 __dirname，因为在 ES 模块中默认是没有的
-// const __dirname = new URL('.', import.meta.url).pathname;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
@@ -25,19 +20,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'), // 将 @ 映射到 src 目录
+      '@': resolve(__dirname, 'src'),
     },
-    extensions: ['.ts', '.json', '.ts']
-  },
-  root: resolve(__dirname, "./"),
-  build: {
-    rollupOptions: {
-      input: {
-        popup: resolve(__dirname, "index.html"), // 插件弹窗
-      },
-      output: {
-        entryFileNames: "[name].js"
-      }
-    }
+    extensions: ['.ts', '.json']
   }
 });

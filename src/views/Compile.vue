@@ -1,87 +1,64 @@
 <template>
 
-    <!-- <div class="common-layout">
+    <CommonLayout>
+        <template #header>
+            <div>📘 顶部导航</div>
+        </template>
 
-        <div class="common-layout">
-            <el-container>
-                <el-aside width="200px">Aside</el-aside>
-                <el-container>
-                    <el-header>Header</el-header>
-                    <el-main>
-                        <div class="md-editor">
-                            <Editormd v-model:value="selectedFile.content" :height="height" :editLanguage="editLanguage"
-                                :editorTheme="editorTheme" :editorAreaTheme="editorAreaTheme"
-                                :previewAreaTheme="previewAreaTheme" />
-                        </div>
-                    </el-main>
-                    <el-footer><el-card class="menu" shadow="always">
-                            <div class="menu-toolbar">
-                                <el-select v-model="selectValue" :placeholder="t('compile_view.select')"
-                                    class="export-select">
-                                    <el-option v-for="item in options" :key="item.value" :label="t(item.label)"
-                                        :value="item.value" />
-                                </el-select>
-                                <el-button class="export-btn" type="primary" @click="exportFile">{{
-                                    t('compile_view.export')
-                                    }}</el-button>
-                                <el-button class="save-to-cloud" type="primary" @click="saveCloud">{{
-                                    t('compile_view.save_to_cloud')
-                                    }}</el-button>
-                                <el-link v-if="locale === 'zh-CN'" href="https://www.markdown.cn/docs/cheat-sheet/"
-                                    target="_blank" :underline="false">
-                                    {{ t('compile_view.markdown_guide_cn') }}
-                                </el-link>
-                                <el-link v-else href="https://www.markdownguide.org/basic-syntax/" target="_blank"
-                                    :underline="false">
-                                    {{ t('compile_view.markdown_guide_en') }}
-                                </el-link>
+        <template #sidebar>
+            <el-menu default-active="1">
+                <el-menu-item index="1">首页</el-menu-item>
+                <el-menu-item index="2">设置</el-menu-item>
+            </el-menu>
+        </template>
 
-                                <div class="settings-link">
-                                    <el-link href="/settings" target="_blank" :underline="false" id="settings-link">
-                                        <Setting style="vertical-align: middle; width: 20px; height: 20px;" />
-                                    </el-link>
-                                </div>
-                            </div>
-                        </el-card></el-footer>
-                </el-container>
-            </el-container>
-        </div>
-    </div> -->
-
-    <div class="md-editor">
-        <Editormd v-model:value="selectedFile.content" :height="height" :editLanguage="editLanguage"
-            :editorTheme="editorTheme" :editorAreaTheme="editorAreaTheme" :previewAreaTheme="previewAreaTheme" />
-    </div>
-
-    <el-card class="menu" shadow="always">
-        <div class="menu-toolbar">
-            <el-select v-model="selectValue" :placeholder="t('compile_view.select')" class="export-select">
-                <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value" />
-            </el-select>
-            <el-button class="export-btn" type="primary" @click="exportFile">{{ t('compile_view.export')
-            }}</el-button>
-            <el-button class="save-to-cloud" type="primary" @click="saveCloud">{{ t('compile_view.save_to_cloud')
-            }}</el-button>
-            <el-link v-if="locale === 'zh-CN'" href="https://www.markdown.cn/docs/cheat-sheet/" target="_blank"
-                :underline="false">
-                {{ t('compile_view.markdown_guide_cn') }}
-            </el-link>
-            <el-link v-else href="https://www.markdownguide.org/basic-syntax/" target="_blank" :underline="false">
-                {{ t('compile_view.markdown_guide_en') }}
-            </el-link>
-
-            <div class="settings-link">
-                <el-link href="/settings" target="_blank" :underline="false" id="settings-link">
-                    <Setting style="vertical-align: middle; width: 20px; height: 20px;" />
-                </el-link>
+        <template #main>
+            <div class="md-editor">
+                <Editormd v-model:value="selectedFile.content" :height="height" :editLanguage="editLanguage"
+                    :editorTheme="editorTheme" :editorAreaTheme="editorAreaTheme"
+                    :previewAreaTheme="previewAreaTheme" />
             </div>
-        </div>
-    </el-card>
+        </template>
+
+        <template #footer>
+            <el-card class="menu" shadow="always">
+                <div class="menu-toolbar">
+                    <el-select v-model="selectValue" :placeholder="t('compile_view.select')" class="export-select">
+                        <el-option v-for="item in options" :key="item.value" :label="t(item.label)"
+                            :value="item.value" />
+                    </el-select>
+                    <el-button class="export-btn" type="primary" @click="exportFile">{{ t('compile_view.export')
+                        }}</el-button>
+                    <el-button class="save-to-cloud" type="primary" @click="saveCloud">{{
+                        t('compile_view.save_to_cloud')
+                        }}</el-button>
+                    <el-link v-if="locale === 'zh-CN'" href="https://www.markdown.cn/docs/cheat-sheet/" target="_blank"
+                        :underline="false">
+                        {{ t('compile_view.markdown_guide_cn') }}
+                    </el-link>
+                    <el-link v-else href="https://www.markdownguide.org/basic-syntax/" target="_blank"
+                        :underline="false">
+                        {{ t('compile_view.markdown_guide_en') }}
+                    </el-link>
+
+                    <div class="settings-link">
+                        <el-link href="/settings" target="_blank" :underline="false" id="settings-link">
+                            <Setting style="vertical-align: middle; width: 20px; height: 20px;" />
+                        </el-link>
+                    </div>
+                </div>
+            </el-card>
+        </template>
+
+    </CommonLayout>
 
     <div id="mdtohtml" style="display:none;"></div>
+
+
 </template>
 
 <script setup>
+import CommonLayout from "@/components/CommonLayout.vue";
 import { ref, watch } from "vue";
 import Editormd from "../components/Editormd.vue";
 import { ElMessageBox } from 'element-plus'
