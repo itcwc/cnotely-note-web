@@ -3,13 +3,13 @@
     <el-container style="height: 100vh;">
       <!-- 侧边栏 -->
       <el-aside width="200px" v-if="isSidebarVisible" class="aside">
-        <!-- 关闭按钮 -->
-        <div class="aside-close-btn">
-          <el-button size="small" icon="el-icon-close" @click="isSidebarVisible = false">关闭</el-button>
-        </div>
-
         <!-- 用户自定义 sidebar 内容 -->
         <slot name="sidebar" />
+
+        <!-- 关闭按钮 -->
+        <div class="aside-close-btn">
+          <el-button size="small" :icon="ArrowLeft" @click="isSidebarVisible = false" />
+        </div>
       </el-aside>
 
       <!-- 主体部分 -->
@@ -32,20 +32,13 @@
     </el-container>
 
     <!-- 显示侧边栏的浮动按钮 -->
-    <el-button
-      v-if="!isSidebarVisible"
-      class="open-sidebar-btn"
-      type="primary"
-      icon="el-icon-menu"
-      size="small"
-      @click="isSidebarVisible = true"
-    >
-      打开菜单
-    </el-button>
+    <el-button size="small" v-if="!isSidebarVisible" class="open-sidebar-btn" type="primary" :icon="ArrowRight"
+      @click="isSidebarVisible = true" />
   </div>
 </template>
 
 <script setup>
+import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 import { ref } from 'vue';
 
 const isSidebarVisible = ref(true);
@@ -53,30 +46,32 @@ const isSidebarVisible = ref(true);
 
 <style scoped>
 .common-layout {
-  height: 100vh;
   overflow: hidden;
-  background-color: #f5f7fa;
   position: relative;
 }
 
 .el-header,
 .el-footer {
-  background-color: #fff;
-  color: #333;
   display: flex;
   align-items: center;
-  padding: 0 20px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+}
+
+.el-header {
+  height: 60px;
+}
+
+.el-footer {
+  height: 50px;
 }
 
 .el-main {
-  padding: 20px;
-  background-color: #fff;
+  padding: 0px;
   overflow-y: auto;
 }
 
 .aside {
-  background-color: #fff;
   padding: 16px;
   position: relative;
   box-shadow: 1px 0 2px rgba(0, 0, 0, 0.05);
@@ -88,11 +83,25 @@ const isSidebarVisible = ref(true);
   margin-bottom: 8px;
 }
 
-/* 左下角打开菜单按钮 */
 .open-sidebar-btn {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 999;
+  position: absolute;
+  left: 0;
+  bottom: 60px;
+  z-index: 1001;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0 10px 10px 0;
+  border: none;
+  /* 去除边框 */
+  width: 0px;
+}
+
+.aside-close-btn {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  /* border-radius: 0 10px 10px 0; */
+  /* border: none; */
 }
 </style>
