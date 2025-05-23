@@ -1,103 +1,43 @@
 {
     "titles": {
-        "Home": "首页 - CNote",
-        "Editor": "编辑 - CNote",
-        "Sync": "云同步 - CNote",
-        "Login": "登录 - CNote",
         "Settings": "设置 - CNote",
-        "Register": "注册 - CNote",
-        "ForgotPassword": "忘记密码 - CNote"
-    },
-    "home": "首页",
-    "editor": "在线编辑",
-    "sync": "云同步",
-    "login": "登录",
-    "settings": "设置",
-    "home_view": {
-        "intro": "Cnote - 网页剪辑扩展",
-        "intro_description": "Cnote 是一个简单高效的浏览器扩展，帮助用户将网页内容剪辑为 Markdown 笔记。支持多格式导出和云同步，便于在不同设备间访问笔记。",
-        "features": "🌟 功能",
-        "features_list": {
-            "step1": "📝 从网页中选择文本，并保存为 Markdown 格式的笔记。",
-            "step2": "📑 将笔记导出为多种格式：.md、.pdf、.html、.docx 和 .txt。",
-            "step3": "☁️ 保存笔记到云端，实现设备间的无缝同步。",
-            "step4": "🖱️ 快捷右键菜单：“添加到新笔记”选项。",
-            "step5": "🎨 带有实时预览的 Markdown 编辑器。"
-        },
-        "installation_guide": "🚀 安装指南",
-        "chrome_installation": {
-            "browser_title": "对于 Chrome 浏览器",
-            "step1_before": "访问",
-            "step1_text": "Chrome 网上应用店",
-            "step1_after": "以下载并安装该扩展。",
-            "step2": "安装完成后，右键选择任意文本并选择“添加到新笔记”。"
-        },
-        "edge_installation": {
-            "browser_title": "对于 Edge 浏览器",
-            "step1_before": "访问",
-            "step1_text": "Edge 附加组件商店",
-            "step2": "按照指引完成安装并开始使用扩展。"
-        },
-        "screenshots": {
-            "screenshot_title": "📸 插件截图",
-            "screenshot_1": "添加文字到笔记",
-            "screenshot_2": "编辑文字",
-            "screenshot_3": "添加图片到笔记",
-            "screenshot_4": "编辑图片",
-            "screenshot_5": "设置"
-        },
-        "privacy_policy": {
-            "title": "📄 隐私政策",
-            "description": "为了保护用户的隐私，我们承诺不会收集或存储任何敏感数据。详细信息请查看我们的隐私政策：",
-            "links": {
-                "cn": "隐私政策 (CN)",
-                "en": "Privacy Policy (EN)"
-            }
-        },
-        "contact_us": {
-            "title": "📬 联系我们",
-            "description": "如果您有任何问题或建议，请随时联系我们：",
-            "email": "邮箱:",
-            "github": "提交问题"
-        },
-        "license": {
-            "title": "⚠️ 许可协议",
-            "description1": "本项目基于",
-            "description2": "开源，您可以自由地使用和修改。"
-        }
-    },
-    "login_view": {
-        "login": "登录",
-        "title": "登录页面",
-        "email": "邮箱：",
-        "password": "密码：",
-        "register1": "还没有账号？",
-        "register2": "点击这里注册",
-        "forgot_password": "忘记密码？"
-    },
-    "register_view": {
-        "register": "注册",
-        "title": "注册页面",
-        "email": "邮箱：",
-        "password": "密码：",
-        "confirm_password": "确认密码：",
-        "login1": "已经有账号？",
-        "login2": "点击这里登录"
-    },
-    "forgot_password_view": {
-        "title": "忘记密码",
-        "tips": "请输入您的电子邮件地址以重置您的密码。",
-        "email": "邮箱：",
-        "submit": "发送重置链接",
-        "login1": "已经有账号？",
-        "login2": "点击这里登录"
+        "Compile": "编辑 - CNote"
     },
     "editor_view": {
         "left": {
-            "title": "文件管理",
-            "new_file": "新建文件",
-            "new_folder": "新建文件夹",
             "back_to_edit_page": "返回编辑页"
         }
+    },
+    "settings_view": {
+        "select_language": "选择语言：",
+        "english": "英文",
+        "chinese": "中文",
+        "select_theme": "选择主题：",
+        "dark_theme": "黑色主题",
+        "light_theme": "白色主题",
+        "editor_theme": "编辑器主题：",
+        "editor_area_theme": "编辑区主题：",
+        "preview_area_theme": "预览区主题：",
+        "save_to_cloud": "保存配置到云",
+        "reset": "重制",
+        "demo_content": "### 这里是一些设置内容",
+        "save_not_online": "暂未上线",
+        "reset_success": "重制成功"
+    },
+    "compile_view": {
+        "select": "选择",
+        "export": "导出",
+        "save_to_cloud": "保存到云",
+        "markdown_guide_cn": "Markdown笔记使用指南",
+        "markdown_guide_en": "Markdown笔记使用指南-英文版",
+        "export_md": "导出 .md 格式",
+        "export_pdf": "导出 .pdf 格式",
+        "export_html": "导出 .html 格式",
+        "export_docx": "导出 .docx 格式",
+        "export_txt": "导出 .txt 格式",
+        "export_html_title": "选择导出模式",
+        "export_html_message": "<div>请选择导出的 HTML 主题：<br>请注意这里引入了本站的远程css样式，如本站样式失效请移步<a href=\"https://github.com/s1m4ne/typora-theme-notion-style\" target=\"_blank\">此处</a>下载</div>",
+        "dark_mode": "黑暗模式",
+        "light_mode": "白天模式"
     }
 }

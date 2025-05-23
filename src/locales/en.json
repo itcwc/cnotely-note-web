@@ -1,104 +1,43 @@
 {
   "titles": {
-    "Home": "Home - CNote",
-    "Editor": "Editor - CNote",
-    "Sync": "Sync - CNote",
-    "Login": "Login - CNote",
     "Settings": "Settings - CNote",
-    "Register": "Register - CNote",
-    "ForgotPassword": "ForgotPassword - CNote",
     "Compile": "Compile - CNote"
-  },
-  "home": "Home",
-  "editor": "Editor",
-  "sync": "Sync",
-  "login": "Login",
-  "settings": "Settings",
-  "home_view": {
-    "intro": "Cnote - Web Clipper Extension",
-    "intro_description": "Cnote is a simple and efficient browser extension that helps users clip content from web pages into Markdown notes. It supports multi-format export and cloud synchronization to keep your notes accessible across devices.",
-    "features": "🌟 Features",
-    "features_list": {
-      "step1": "📝 Select text from web pages and save it as a note in Markdown format.",
-      "step2": "📑 Export notes in multiple formats: .md, .pdf, .html, .docx, and .txt.",
-      "step3": "☁️ Save notes to the cloud for seamless synchronization across devices.",
-      "step4": "🖱️ Quick right-click menu: 'Add to New Note' option.",
-      "step5": "🎨 Markdown editor with a real-time preview."
-    },
-    "installation_guide": "🚀 Installation Guide",
-    "chrome_installation": {
-      "browser_title": "For Chrome Browser",
-      "step1_before": "Visit the ",
-      "step1_text": "Chrome Web Store",
-      "step1_after": " to download and install the extension.",
-      "step2": "Once installed, right-click on any selected text and choose 'Add to New Note.'"
-    },
-    "edge_installation": {
-      "browser_title": "For Edge Browser",
-      "step1_before": "Visit the ",
-      "step1_text": "Edge Add-ons Store",
-      "step2": "Follow the instructions to install and start using the extension."
-    },
-    "screenshots": {
-      "screenshot_title": "📸 Screenshots",
-      "screenshot_1": "Add text to notes",
-      "screenshot_2": "Editor",
-      "screenshot_3": "Add image to notes",
-      "screenshot_4": "Image in editor",
-      "screenshot_5": "Settings"
-    },
-    "privacy_policy": {
-      "title": "📄 Privacy Policy",
-      "description": "We are committed to protecting your privacy and ensuring your data is secure. For more details, please refer to our privacy policy:",
-      "links": {
-        "cn": "隐私政策 (CN)",
-        "en": "Privacy Policy (EN)"
-      }
-    },
-    "contact_us": {
-      "title": "📬 Contact Us",
-      "description": "If you have any questions or feedback, feel free to reach out to us:",
-      "email": "Email:",
-      "github": "Submit an Issue"
-    },
-    "license": {
-      "title": "⚠️ License",
-      "description1": "This project is open source and licensed under the ",
-      "description2": ". You are free to use, modify, and distribute it."
-    }
-  },
-  "login_view": {
-    "login": "Login",
-    "title": "Login Page",
-    "email": "Email:",
-    "password": "Password:",
-    "register1": "Don't have an account?",
-    "register2": "Register here",
-    "forgot_password": "Forgot Password?"
-  },
-  "register_view": {
-    "register": "Register",
-    "title": "Register Page",
-    "email": "Email:",
-    "password": "Password:",
-    "confirm_password": "Confirm Password:",
-    "login1": "Already have an account?",
-    "login2": "Login here"
-  },
-  "forgot_password_view": {
-    "title": "Forgot Password",
-    "tips": "Please enter your email address to reset your password.",
-    "email": "Email:",
-    "submit": "Send Reset Link",
-    "login1": "Already have an account?",
-    "login2": "Login here"
   },
   "editor_view": {
     "left": {
-      "title": "File Management",
-      "new_file": "Create New File",
-      "new_folder": "Create New Folder",
-      "back_to_edit_page": "Return to Edit Page"
+      "back_to_edit_page": "Back to Edit Page"
     }
+  },
+  "settings_view": {
+    "select_language": "Select Language:",
+    "english": "English",
+    "chinese": "Chinese",
+    "select_theme": "Select Theme:",
+    "dark_theme": "Dark Theme",
+    "light_theme": "Light Theme",
+    "editor_theme": "Editor Theme:",
+    "editor_area_theme": "Editor Area Theme:",
+    "preview_area_theme": "Preview Area Theme:",
+    "save_to_cloud": "Save to Cloud",
+    "reset": "Reset",
+    "demo_content": "### Here are some settings content",
+    "save_not_online": "Not online yet",
+    "reset_success": "Reset successfully"
+  },
+  "compile_view": {
+    "select": "Select",
+    "export": "Export",
+    "save_to_cloud": "Save to Cloud",
+    "markdown_guide_cn": "Markdown Guide (CN)",
+    "markdown_guide_en": "Markdown Guide (EN)",
+    "export_md": "Export .md",
+    "export_pdf": "Export .pdf",
+    "export_html": "Export .html",
+    "export_docx": "Export .docx",
+    "export_txt": "Export .txt",
+    "export_html_title": "Select Export Mode",
+    "export_html_message": "<div>Please select the HTML theme to export:<br>Please note that this uses the site's remote CSS. If the style fails, please go to <a href=\"https://theme.typora.io/theme/Notion-Style/\" target=\"_blank\">here</a> to download.</div>",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode"
   }
 }

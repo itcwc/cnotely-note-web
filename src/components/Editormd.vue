@@ -117,7 +117,7 @@ export default {
       } catch (error) {
         console.error("Editor initialization failed:", error);
       }
-
+      
       const loadLanguagePack = (language) => {
         const langPath = `/libs/editor.md/languages/${language}`;
         return new Promise((resolve, reject) => {
@@ -130,6 +130,9 @@ export default {
           });
         });
       };
+
+      var editLanguage = props.editLanguage ?? 'en';
+      loadLanguagePack(editLanguage);
 
       watch(
         () => [props.editLanguage, props.editorTheme, props.editorAreaTheme, props.previewAreaTheme],

@@ -21,7 +21,7 @@ export default defineConfig({
     }),
     Components({
       resolvers: [ElementPlusResolver()],
-    }),
+    })
   ],
   resolve: {
     alias: {
@@ -34,8 +34,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: resolve(__dirname, "index.html"), // 插件弹窗
-        background: resolve(__dirname, "src/background.ts"), // 后台脚本
-        content: resolve(__dirname, "src/content.ts") // 内容脚本
       },
       output: {
         entryFileNames: "[name].js"
