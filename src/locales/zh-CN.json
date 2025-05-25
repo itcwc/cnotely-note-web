@@ -9,6 +9,7 @@
         }
     },
     "settings_view": {
+        "title": "设置",
         "select_language": "选择语言：",
         "english": "英文",
         "chinese": "中文",
@@ -38,6 +39,10 @@
         "export_html_title": "选择导出模式",
         "export_html_message": "<div>请选择导出的 HTML 主题：<br>请注意这里引入了本站的远程css样式，如本站样式失效请移步<a href=\"https://github.com/s1m4ne/typora-theme-notion-style\" target=\"_blank\">此处</a>下载</div>",
         "dark_mode": "黑暗模式",
-        "light_mode": "白天模式"
+        "light_mode": "白天模式",
+        "new_note": "未命名笔记",
+        "file_name_placeholder": "点击输入文件名",
+        "input_file_name": "输入文件名",
+        "empty_input_message": "请输入内容~"
     }
 }

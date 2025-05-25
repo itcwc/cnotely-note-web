@@ -41,7 +41,7 @@
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue';
 import { ref } from 'vue';
 
-const isSidebarVisible = ref(true);
+const isSidebarVisible = ref(false);
 </script>
 
 <style scoped>
@@ -77,31 +77,25 @@ const isSidebarVisible = ref(true);
   box-shadow: 1px 0 2px rgba(0, 0, 0, 0.05);
 }
 
-.aside-close-btn {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 8px;
-}
-
 .open-sidebar-btn {
   position: absolute;
   left: 0;
-  bottom: 60px;
+  bottom: 65px;
   z-index: 1001;
   background-color: rgba(0, 0, 0, 0.5);
-  border-radius: 0 10px 10px 0;
+  border-radius: 0 5px 5px 0;
   border: none;
   /* 去除边框 */
   width: 0px;
 }
 
 .aside-close-btn {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
   position: absolute;
   bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
-  /* background-color: rgba(0, 0, 0, 0.5); */
-  /* border-radius: 0 10px 10px 0; */
-  /* border: none; */
 }
 </style>

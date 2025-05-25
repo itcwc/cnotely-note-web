@@ -3,7 +3,7 @@
     <el-card shadow="always" class="settings-card">
       <template #header>
         <span id="setting">
-          <Setting style="vertical-align: middle; width: 20px; height: 20px;" /> {{ t('settings') }}
+          <Setting style="vertical-align: middle; width: 20px; height: 20px;" /> {{ t('settings_view.title') }}
         </span>
         <el-button type="primary" @click="goBack" style="float:right;">{{ t('editor_view.left.back_to_edit_page')
         }}</el-button>

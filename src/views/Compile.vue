@@ -2,14 +2,21 @@
 
     <CommonLayout>
         <template #header>
-            <div>📘 文件名</div>
+            <div class="file-name-header">
+                📘 <span style="margin-left: 20px;" v-if="!isEditing" @click="isEditing = true">{{ fileName ||
+                    $t('compile_view.file_name_placeholder')
+                    }}</span>
+                <input style="margin-left: 20px; color: #303133;" v-else v-model="fileName"
+                    :placeholder="$t('compile_view.input_file_name')" @blur="isEditing = false" class="custom-input" />
+            </div>
         </template>
 
         <template #sidebar>
-            <el-menu default-active="1">
+            <!-- <el-menu default-active="1">
                 <el-menu-item index="1">文件1</el-menu-item>
                 <el-menu-item index="2">文件2</el-menu-item>
-            </el-menu>
+            </el-menu> -->
+            Under development...
         </template>
 
         <template #main>
@@ -27,10 +34,10 @@
                     <el-option v-for="item in options" :key="item.value" :label="t(item.label)" :value="item.value" />
                 </el-select>
                 <el-button class="export-btn" type="primary" @click="exportFile">{{ t('compile_view.export')
-                }}</el-button>
+                    }}</el-button>
                 <el-button class="save-to-cloud" type="primary" @click="saveCloud">{{
                     t('compile_view.save_to_cloud')
-                }}</el-button>
+                    }}</el-button>
                 <el-link v-if="locale === 'zh-CN'" href="https://www.markdown.cn/docs/cheat-sheet/" target="_blank"
                     :underline="false">
                     {{ t('compile_view.markdown_guide_cn') }}
@@ -104,15 +111,27 @@ const options = [
 ];
 const selectValue = ref(options[0].value);
 
+const isEditing = ref(false);
+const fileName = ref(t("compile_view.new_note")); // 默认文件名为 "note"
 // 导出文件方法
 const exportFile = () => {
     const format = selectValue.value;
+    const content = selectedFile.value.content;
+    if (!content.trim()) {
+        ElMessage({
+            message: t('compile_view.empty_input_message'),
+            type: 'error',
+            duration: 2000
+        });
+        return;
+    }
+    const name = fileName.value || t("compile_view.new_note"); // 使用输入的文件名或默认值
     switch (format) {
         case 'md':
-            exportMarkdown(selectedFile.value.content);
+            exportMarkdown(content, name);
             break;
         case 'pdf':
-            exportPdf(selectedFile.value.content);
+            exportPdf(content, name);
             break;
         case 'html':
             ElMessageBox({
@@ -125,17 +144,17 @@ const exportFile = () => {
                 confirmButtonClass: 'export-hmd-cbtn'
             })
                 .then(() => {
-                    exportHtml(selectedFile.value.content, 'dark')
+                    exportHtml(content, 'dark', name)
                 })
                 .catch(() => {
-                    exportHtml(selectedFile.value.content, 'light')
+                    exportHtml(content, 'light', name)
                 })
             break;
         case 'docx':
-            exportDocx(selectedFile.value.content);
+            exportDocx(content, name);
             break;
         case 'txt':
-            exportTxt(selectedFile.value.content);
+            exportTxt(content, name);
             break;
         default:
             console.error('Unsupported format');
@@ -228,5 +247,26 @@ const saveCloud = () => {
 #settings-icon {
     width: 25px;
     height: 25px;
+}
+
+.custom-input {
+    width: 50%;
+    display: inline-block;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    font-size: 22px;
+    font-weight: bold;
+    outline: none;
+}
+
+/* .custom-input:focus {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+} */
+
+.file-name-header {
+    font-size: 22px;
+    font-weight: bold;
+    width: 50%;
+    color: #303133;
 }
 </style>

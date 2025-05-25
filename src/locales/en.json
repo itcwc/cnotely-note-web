@@ -9,6 +9,7 @@
     }
   },
   "settings_view": {
+    "title": "Settings",
     "select_language": "Select Language:",
     "english": "English",
     "chinese": "Chinese",
@@ -38,6 +39,10 @@
     "export_html_title": "Select Export Mode",
     "export_html_message": "<div>Please select the HTML theme to export:<br>Please note that this uses the site's remote CSS. If the style fails, please go to <a href=\"https://theme.typora.io/theme/Notion-Style/\" target=\"_blank\">here</a> to download.</div>",
     "dark_mode": "Dark Mode",
-    "light_mode": "Light Mode"
+    "light_mode": "Light Mode",
+    "new_note": "Untitled Note",
+    "file_name_placeholder": "Click to enter the file name",
+    "input_file_name": "Enter the file name",
+    "empty_input_message": "Please enter content~"
   }
 }

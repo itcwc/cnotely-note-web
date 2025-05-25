@@ -100,7 +100,7 @@ export default {
             "|",
             "preview",
             "watch",
-            "fullscreen",
+            // "fullscreen",
           ],
         });
 
