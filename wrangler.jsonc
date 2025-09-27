@@ -1,9 +1,7 @@
 {
   "name": "cnotely",
-  "compatibility_date": "2025-09-28",
-  "main": "src/index.ts",   // Worker 脚本入口
-
-  "site": {
-    "bucket": "./dist"
+  "compatibility_date": "2025-09-27",
+  "assets": {
+    "directory": "./dist"
   }
 }
