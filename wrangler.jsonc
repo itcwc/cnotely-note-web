@@ -1,18 +1,9 @@
 {
   "name": "cnotely",
   "compatibility_date": "2025-09-28",
+  "main": "src/index.ts",   // Worker 脚本入口
 
-  // 静态资源目录
   "site": {
-    "bucket": "./dist",
-    "entry-point": "workers-site"
-  },
-
-  // Worker 路由：匹配所有请求，让 Worker 处理 SPA 路由
-  "routes": [
-    {
-      "pattern": "*",
-      "script": "cnotely"
-    }
-  ]
+    "bucket": "./dist"
+  }
 }
