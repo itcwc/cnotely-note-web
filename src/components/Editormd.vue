@@ -5,7 +5,26 @@
 </template>
 
 <script>
+// import $ from "jquery";
+import "../../public/libs/editor.md/css/editormd.css";
+import "../../public/libs/editor.md/editormd.min.js";
 import { onMounted, watch } from "vue";
+
+// window.$ = window.jQuery = $;
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve();
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+    document.head.appendChild(script);
+  });
+}
 
 export default {
   name: "Editormd",
@@ -21,9 +40,9 @@ export default {
   },
 
   emits: [
-      'update:value',
-      // 'update:html'
-    ],
+    "update:value",
+    // 'update:html'
+  ],
   setup(props, { emit }) {
     function themeSelect(id, themes, lsKey, callback) {
       const select = document.getElementById(id);
@@ -52,17 +71,59 @@ export default {
       return select;
     }
 
-    onMounted(() => {
+    onMounted(async () => {
       let editor = null;
 
+      const fullToolbarIcons = () => [
+        "bold",
+        "italic",
+        "pagebreak",
+        "|",
+        "h1",
+        "h2",
+        "h3",
+        "|",
+        "hr",
+        "quote",
+        "list-ul",
+        "list-ol",
+        "|",
+        "link",
+        "image",
+        "code",
+        "preformatted-text",
+        "code-block",
+        "table",
+        "datetime",
+        "|",
+        "preview",
+        "watch",
+      ];
+
+      const mobileToolbarIcons = () => [
+        "bold",
+        "italic",
+        "hr",
+        "del",
+        "quote",
+        "h1",
+        "h2",
+        "watch",
+      ];
+
+      const isMobile = window.innerWidth <= 768;
+
+      const toolbarIconsFunc = isMobile ? mobileToolbarIcons : fullToolbarIcons;
+
       try {
+        await loadScript("/libs/editor.md/editormd.min.js");
         editor = window.editormd("editor-container", {
           path: "/libs/editor.md/lib/",
           width: "99%",
           tex: true,
           flowChart: true,
           sequenceDiagram: true,
-          height: props.height, // 修复重复定义问题
+          height: props.height,
           theme: props.editorTheme,
           previewTheme: props.previewAreaTheme,
           editorTheme: props.editorAreaTheme,
@@ -73,51 +134,58 @@ export default {
           saveHTMLToTextarea: true,
           imageUpload: true,
           imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-          imageUploadURL: props.imageUploadURL, // 动态配置
-          katexURL: {
-          },
-          toolbarIcons: () => [
-            "bold",
-            "italic",
-            "pagebreak",
-            "|",
-            "h1",
-            "h2",
-            "h3",
-            "|",
-            "hr",
-            "quote",
-            "list-ul",
-            "list-ol",
-            "|",
-            "link",
-            "image",
-            "code",
-            "preformatted-text",
-            "code-block",
-            "table",
-            "datetime",
-            "|",
-            "preview",
-            "watch",
-            // "fullscreen",
-          ],
+          imageUploadURL: props.imageUploadURL,
+          katexURL: {},
+          watch: !isMobile,
+          preview: !isMobile,
+          lineNumbers: !isMobile,
+          toolbarIcons: toolbarIconsFunc
+          // toolbarIcons: () => [
+          //   "bold",
+          //   "italic",
+          //   "pagebreak",
+          //   "|",
+          //   "h1",
+          //   "h2",
+          //   "h3",
+          //   "|",
+          //   "hr",
+          //   "quote",
+          //   "list-ul",
+          //   "list-ol",
+          //   "|",
+          //   "link",
+          //   "image",
+          //   "code",
+          //   "preformatted-text",
+          //   "code-block",
+          //   "table",
+          //   "datetime",
+          //   "|",
+          //   "preview",
+          //   "watch",
+          // ],
         });
 
         // 监听内容变化并触发事件
         editor.on("change", () => {
           const markdownContent = editor.getMarkdown();
-          // const htmlContent = editor.getHTML();
-          emit('update:value', markdownContent); // 传递 markdown 内容
-          // emit('update:html', htmlContent); // 传递 html 内容
-          // console.log(htmlContent);
+          emit("update:value", markdownContent);
         });
 
-
+        // 添加对 value 属性的监听
+        watch(
+          () => props.value,
+          (newValue) => {
+            if (editor && editor.getMarkdown() !== newValue) {
+              editor.setMarkdown(newValue);
+            }
+          }
+        );
       } catch (error) {
         console.error("Editor initialization failed:", error);
       }
-      
+
       const loadLanguagePack = (language) => {
         const langPath = `/libs/editor.md/languages/${language}`;
         return new Promise((resolve, reject) => {
@@ -131,12 +199,22 @@ export default {
         });
       };
 
-      var editLanguage = props.editLanguage ?? 'en';
+      var editLanguage = props.editLanguage ?? "en";
       loadLanguagePack(editLanguage);
 
       watch(
-        () => [props.editLanguage, props.editorTheme, props.editorAreaTheme, props.previewAreaTheme],
-        async ([editLanguage, newEditorTheme, newEditorAreaTheme, newPreviewAreaTheme]) => {
+        () => [
+          props.editLanguage,
+          props.editorTheme,
+          props.editorAreaTheme,
+          props.previewAreaTheme,
+        ],
+        async ([
+          editLanguage,
+          newEditorTheme,
+          newEditorAreaTheme,
+          newPreviewAreaTheme,
+        ]) => {
           if (!editor) return;
 
           try {
@@ -144,7 +222,8 @@ export default {
             editor.setEditorTheme(newEditorAreaTheme);
             editor.setPreviewTheme(newPreviewAreaTheme);
 
-            const normalizedLang = editLanguage === "zh_CN" ? "zh-cn" : editLanguage;
+            const normalizedLang =
+              editLanguage === "zh_CN" ? "zh-cn" : editLanguage;
             await loadLanguagePack(normalizedLang);
             editor.lang = window.editormd.defaults.lang;
             editor.recreate();
@@ -198,5 +277,33 @@ export default {
 #editor-container {
   width: 100%;
   margin: 0 0 5px 0;
+}
+
+@media (max-width: 768px) {
+  .file-name-header {
+    font-size: 16px;
+    /* header 字体缩小 */
+  }
+
+  .menu-toolbar {
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .export-btn,
+  .save-to-cloud {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .custom-input {
+    width: 70%;
+    font-size: 16px;
+  }
+
+  #editor-container {
+    height: calc(100% - 100px);
+    /* 根据 header/footer 调整 */
+  }
 }
 </style>

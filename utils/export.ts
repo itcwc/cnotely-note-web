@@ -152,8 +152,8 @@ const generateFullHtml = (htmlContent: string, themeCssUrl: string): string => {
 const markdownToHTML = (content: string, theme: "light" | "dark") => {
   const themeCssUrl =
     theme === "dark"
-      ? "https://cnote.itcwc.com/notion-style-dark.css"
-      : "https://cnote.itcwc.com/notion-style-light.css";
+      ? "https://cnotely.itcwc.com/notion-style-dark.css"
+      : "https://cnotely.itcwc.com/notion-style-light.css";
 
   // 获取 mdtohtml 元素并清空其内容
   const mdtohtmlElement = document.getElementById("mdtohtml");

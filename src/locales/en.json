@@ -1,7 +1,7 @@
 {
   "titles": {
-    "Settings": "Settings - CNote",
-    "Compile": "Compile - CNote"
+    "Settings": "Settings - cnotely",
+    "Compile": "Compile - cnotely"
   },
   "editor_view": {
     "left": {
@@ -43,6 +43,12 @@
     "new_note": "Untitled Note",
     "file_name_placeholder": "Click to enter the file name",
     "input_file_name": "Enter the file name",
-    "empty_input_message": "Please enter content~"
+    "empty_input_message": "Please enter content~",
+    "contact_me": "Contact Me",
+    "browser_extensions": "Browser Extensions",
+    "chrome_extension": "Chrome (v0.8+)",
+    "edge_extension": "Edge (v0.8+)",
+    "firefox_extension": "Firefox (v0.68)",
+    "under_development": "Under development..."
   }
 }

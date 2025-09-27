@@ -1,7 +1,7 @@
 {
     "titles": {
-        "Settings": "设置 - CNote",
-        "Compile": "编辑 - CNote"
+        "Settings": "设置 - cnotely",
+        "Compile": "编辑 - cnotely"
     },
     "editor_view": {
         "left": {
@@ -43,6 +43,12 @@
         "new_note": "未命名笔记",
         "file_name_placeholder": "点击输入文件名",
         "input_file_name": "输入文件名",
-        "empty_input_message": "请输入内容~"
+        "empty_input_message": "请输入内容~",
+        "contact_me": "联系我",
+        "browser_extensions": "浏览器插件版本",
+        "chrome_extension": "谷歌浏览器(v0.8+)",
+        "edge_extension": "Edge浏览器(v0.8+)",
+        "firefox_extension": "Firefox浏览器(v0.68)",
+        "under_development": "开发中..."
     }
 }
