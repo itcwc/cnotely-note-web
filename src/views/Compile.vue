@@ -107,6 +107,9 @@
 <script setup>
 import CommonLayout from "@/components/CommonLayout.vue";
 import { ref, watch } from "vue";
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 import EditableText from "../components/EditableText.vue";
 import Editormd from "../components/Editormd.vue";
 import { ElMessageBox } from 'element-plus'
@@ -230,10 +233,10 @@ const saveCloud = () => {
 // ----------------------
 // 打开设置
 // ----------------------
-const handleSettings = () => {
-    window.open('/settings', '_blank');
-};
 
+const handleSettings = () => {
+    router.push('/settings');
+};
 </script>
 
 <style scoped>
