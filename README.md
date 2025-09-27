@@ -105,6 +105,7 @@ cnotely/
 │   ├── main.ts        # 入口文件
 │   └── style.css      # 全局样式
 ├── utils/             # 工具函数
+├── wrangler.jsonc     # Cloudflare Workers 配置文件
 └── vite.config.ts     # Vite 配置
 ```
 
