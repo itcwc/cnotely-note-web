@@ -18,7 +18,7 @@
                         target="_blank">{{ t('compile_view.chrome_extension') }}</a><br>
                     <a href="https://microsoftedge.microsoft.com/addons/detail/bdcofhehaohhfckpelmkkpmigoemecpp"
                         target="_blank">{{ t('compile_view.edge_extension') }}</a><br>
-                    <a href="https://addons.mozilla.org/en-US/firefox/addon/cnotely/" target="_blank">{{
+                    <a href="https://addons.mozilla.org/en-US/firefox/addon/cnote/" target="_blank">{{
                         t('compile_view.firefox_extension') }}</a>
                 </p>
 
