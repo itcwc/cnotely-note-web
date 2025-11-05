@@ -73,7 +73,7 @@
                         :underline="false">
                         <span class="markdown-guide-text">{{
                             t("compile_view.markdown_guide_cn")
-                            }}</span>
+                        }}</span>
                         <!-- <QuestionFilled class="markdown-guide-icon" /> -->
                         <el-icon class="markdown-guide-icon">
                             <QuestionFilled />
@@ -84,7 +84,7 @@
                         :underline="false">
                         <span class="markdown-guide-text">{{
                             t("compile_view.markdown_guide_en")
-                            }}</span>
+                        }}</span>
                         <!-- <QuestionFilled class="markdown-guide-icon" /> -->
                         <el-icon class="markdown-guide-icon">
                             <QuestionFilled />
