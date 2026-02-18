@@ -11,6 +11,10 @@ import 'element-plus/dist/index.css'
 import './assets/css/global.css';
 import 'element-plus/theme-chalk/dark/css-vars.css';
 
+// 初始化主题
+const isDarkTheme = localStorage.getItem("theme") === "dark";
+document.documentElement.classList.toggle("dark", isDarkTheme);
+
 const app = createApp(App);
 // 创建 i18n 实例
 export const i18n = createI18n({
