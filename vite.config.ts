@@ -22,6 +22,9 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'src'),
     },
-    extensions: ['.ts', '.json']
+    extensions: ['.ts', '.json', '.vue']
+  },
+  server: {
+    port: 5174
   }
 });

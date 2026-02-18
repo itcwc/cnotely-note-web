@@ -119,7 +119,7 @@ body {
 .active {
   color: #007bff;
   font-weight: bold;
-  border-bottom: 2px solid #007bff;
+  /* border-bottom: 2px solid #007bff; */
 }
 
 .navbar-right {

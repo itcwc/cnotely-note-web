@@ -1,386 +1,451 @@
 <template>
-    <CommonLayout>
-        <template #header>
-            <el-icon class="notebook-icon">
-                <Notebook />
-            </el-icon>
-            <EditableText v-model="fileName" :placeholder="t('compile_view.file_name_placeholder')" />
-        </template>
+  <div class="common-layout">
+    <el-container style="height: 100vh">
+      <!-- 用户面板 -->
+      <UserAside
+        :panel1Size="panel1Size"
+        :isLoggedIn="isLoggedIn"
+        :userInfo="userInfo"
+        @setLayout="setLayout"
+        @handleSettings="handleSettings"
+        @openNewFileDialog="openNewFileDialog"
+        @handleLoginLogout="handleLoginLogout"
+        @handleAvatarClick="handleAvatarClick"
+      />
 
-        <template #sidebar>
-            <div style="font-size: 13px; color: #333">
+      <!-- 仓库面板 -->
+      <RepoAside
+        ref="repoAsideRef"
+        :panel2Size="panel2Size"
+        :selectedPlatform="selectedPlatform"
+        :repos="repos"
+        :selectedRepo="selectedRepo"
+        :repoTree="repoTree"
+        :defaultExpandedKeys="defaultExpandedKeys"
+        :timelineFiles="timelineFiles"
+        @togglePlatform="togglePlatform"
+        @openRepoDialog="openRepoDialog"
+        @selectRepo="selectRepo"
+        @handleNodeExpand="handleNodeExpand"
+        @handleNodeCollapse="handleNodeCollapse"
+        @handleNodeClick="handleNodeClick"
+        @exportFile="handleExportFile"
+        @deleteFile="handleDeleteFile"
+        @handleSearch="handleSearch"
+        @resetSearch="resetSearch"
+        @importFile="handleImportFile"
+        @importSelectedFiles="handleImportSelectedFiles"
+        @refreshFiles="refreshFiles"
+      />
 
-                <p>{{ t('compile_view.under_development') }}</p>
+      <!-- 编辑器面板 -->
+      <EditorPanel
+        :height="height"
+        :editorPanelSize="editorPanelSize"
+        :editLanguage="editLanguage"
+        :editorTheme="editorTheme"
+        :editorAreaTheme="editorAreaTheme"
+        :previewAreaTheme="previewAreaTheme"
+        :selectedFile="selectedFile"
+        :fileName="fileName"
+        :editor-type="editorType"
+        @switchEditorType="switchEditorType"
+        @exportFile="exportFile"
+        @saveCloud="saveCloud"
+        @update:fileName="(val) => (fileName = val)"
+        @contentChange="handleContentChange"
+        @openNewFileDialog="openNewFileDialog"
+        @importFile="handleImportFile"
+      />
+    </el-container>
 
-                <p>
-                    {{ t('compile_view.browser_extensions') }}<br>
-                    <a href="https://chromewebstore.google.com/detail/cnotely-%E2%80%93-save-web-content/adckfinclpmhjnijmeeejkdhocikacgd"
-                        target="_blank">{{ t('compile_view.chrome_extension') }}</a><br>
-                    <a href="https://microsoftedge.microsoft.com/addons/detail/bdcofhehaohhfckpelmkkpmigoemecpp"
-                        target="_blank">{{ t('compile_view.edge_extension') }}</a><br>
-                    <a href="https://addons.mozilla.org/en-US/firefox/addon/cnote/" target="_blank">{{
-                        t('compile_view.firefox_extension') }}</a>
-                </p>
-
-                <p>
-                    {{ $t("compile_view.contact_me")
-                    }}<a href="mailto:support@cnotely.com"> support@cnotely.com </a>
-                </p>
-            </div>
-        </template>
-
-        <template #main>
-            <div class="md-editor">
-                <Editormd v-model:value="selectedFile.content" :height="height" :editLanguage="editLanguage"
-                    :editorTheme="editorTheme" :editorAreaTheme="editorAreaTheme"
-                    :previewAreaTheme="previewAreaTheme" />
-            </div>
-        </template>
-
-        <template #footer>
-            <!-- <el-card class="menu" shadow="always"> -->
-            <div class="menu-toolbar">
-                <el-tooltip :content="t('compile_view.select')" placement="top">
-                    <el-select v-model="selectValue" :placeholder="t('compile_view.select')" class="export-select">
-                        <el-option v-for="item in options" :key="item.value" :label="getOptionLabel(item)"
-                            :value="item.value" />
-                    </el-select>
-                </el-tooltip>
-
-                <el-tooltip :content="t('compile_view.export')" placement="top">
-                    <el-button class="export-btn" type="primary" @click="exportFile">
-                        <span class="btn-text">{{ t("compile_view.export") }}</span>
-                        <el-icon class="btn-icon">
-                            <Download />
-                        </el-icon>
-                    </el-button>
-                </el-tooltip>
-
-                <el-tooltip :content="t('compile_view.save_to_cloud')" placement="top">
-                    <el-button class="save-to-cloud" type="primary" @click="saveCloud">
-                        <span class="btn-text">{{ t("compile_view.save_to_cloud") }}</span>
-                        <el-icon class="btn-icon">
-                            <UploadFilled />
-                        </el-icon>
-                    </el-button>
-                </el-tooltip>
-
-                <el-tooltip :content="locale === 'zh-CN'
-                    ? t('compile_view.markdown_guide_cn')
-                    : t('compile_view.markdown_guide_en')
-                    " placement="top">
-                    <el-link v-if="locale === 'zh-CN'" href="https://www.markdown.cn/docs/cheat-sheet/" target="_blank"
-                        :underline="false">
-                        <span class="markdown-guide-text">{{
-                            t("compile_view.markdown_guide_cn")
-                        }}</span>
-                        <!-- <QuestionFilled class="markdown-guide-icon" /> -->
-                        <el-icon class="markdown-guide-icon">
-                            <QuestionFilled />
-                        </el-icon>
-                    </el-link>
-
-                    <el-link v-else href="https://www.markdownguide.org/basic-syntax/" target="_blank"
-                        :underline="false">
-                        <span class="markdown-guide-text">{{
-                            t("compile_view.markdown_guide_en")
-                        }}</span>
-                        <!-- <QuestionFilled class="markdown-guide-icon" /> -->
-                        <el-icon class="markdown-guide-icon">
-                            <QuestionFilled />
-                        </el-icon>
-                    </el-link>
-                </el-tooltip>
-            </div>
-
-            <div class="settings-link">
-                <el-button @click="handleSettings" :underline="false" id="settings-link" circle>
-                    <Setting style="vertical-align: middle; width: 20px; height: 20px" />
-                </el-button>
-            </div>
-
-            <!-- </el-card> -->
-        </template>
-    </CommonLayout>
-
-    <div id="mdtohtml" style="display: none"></div>
+    <!-- 新建文件对话框 -->
+    <el-dialog
+      v-model="showNewFileDialog"
+      :title="t('compile_view.new_file_dialog')"
+      width="400px"
+    >
+      <el-form label-position="top">
+        <el-form-item :label="t('compile_view.file_type')">
+          <el-radio-group v-model="newFileType">
+            <el-radio label="md">{{ t("compile_view.markdown") }}</el-radio>
+            <el-radio label="html">{{ t("compile_view.rich_text") }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showNewFileDialog = false">{{
+            t("common.cancel")
+          }}</el-button>
+          <el-button type="primary" @click="createNewFile">{{
+            t("common.confirm")
+          }}</el-button>
+        </span>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 
-
-<script setup>
-import CommonLayout from "@/components/CommonLayout.vue";
-import { ref, watch } from "vue";
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
-import EditableText from "../components/EditableText.vue";
-import Editormd from "../components/Editormd.vue";
-import { ElMessageBox } from 'element-plus'
-import {
-    exportMarkdown,
-    exportTxt,
-    exportPdf,
-    exportHtml,
-    exportDocx
-} from "../../utils/export";
-import {
-    Setting,
-    QuestionFilled,
-    Download,
-    UploadFilled,
-    Notebook,
-} from "@element-plus/icons-vue";
+<script setup lang="ts">
+import { watch, onMounted, onBeforeUnmount } from "vue";
+import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
+import UserAside from "../components/layout/UserAside.vue";
+import RepoAside from "../components/layout/RepoAside.vue";
+import EditorPanel from "../components/layout/EditorPanel.vue";
 
+// 初始化路由和国际化
+const router = useRouter();
 const { t, locale } = useI18n();
-const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+
+// 导入拆分后的文件
+// 状态和基本设置
+import { createState } from "./compile/state";
+
+// 创建状态
+const {
+  isProcessing,
+  repoAsideRef,
+  isInitializing,
+  selectedFile,
+  height,
+  editLanguage,
+  editorTheme,
+  editorAreaTheme,
+  previewAreaTheme,
+  editorType,
+  showNewFileDialog,
+  newFileType,
+  panel1Size,
+  panel2Size,
+  editorPanelSize,
+  timelineFiles,
+  isLoggedIn,
+  userInfo,
+  selectedPlatform,
+  repos,
+  selectedRepo,
+  repoTree,
+  defaultExpandedKeys,
+  fileName,
+  editorId,
+  selectValue,
+} = createState();
+
+// 设置语言
+const savedLanguage = localStorage.getItem("selectedLanguage") || "en";
 locale.value = savedLanguage;
-console.log('savedLanguage', savedLanguage);
 
+// 文件操作
+import {
+  setState,
+  getIsAutoCreating,
+  autoCreateFirstFile,
+  handleContentChange as originalHandleContentChange,
+  handleDeleteFile as originalHandleDeleteFile,
+  handleImportFile as originalHandleImportFile,
+  handleImportSelectedFiles as originalHandleImportSelectedFiles,
+  handleExportFile as originalHandleExportFile,
+  createNewFile as originalCreateNewFile,
+  exportFile as originalExportFile,
+  saveCloud,
+  saveCurrentFileContent,
+  handleNodeClick,
+  restoreFilesFromIndexedDB,
+} from "./compile/fileOperations";
 
-document.documentElement.classList.toggle('dark', localStorage.getItem('theme') === 'dark');
+// 包装事件处理函数，确保传递 t 参数
+const handleContentChange = (file: any) => originalHandleContentChange(file);
+const handleDeleteFile = (file: any) => originalHandleDeleteFile(file, t);
+const handleImportFile = (importData: any) =>
+  originalHandleImportFile(importData, t);
+const handleImportSelectedFiles = (repo: any, selectedFiles: any[]) =>
+  originalHandleImportSelectedFiles(repo, selectedFiles, t);
+const handleExportFile = (file: any, format?: string) =>
+  originalHandleExportFile(file, format, t);
+const exportFile = (format?: string) => originalExportFile(format, t);
+const createNewFile = () => originalCreateNewFile(t);
 
-// 移动端判断
-const isMobile = () => window.innerWidth <= 768;
-const getOptionLabel = (item) => isMobile() ? "." + item.value : t(item.label);
-
-// 编辑器相关响应式变量
-const selectedFile = ref({ content: "" });
-const height = "100%";
-const editLanguage = ref(savedLanguage || "en");
-const editorTheme = localStorage.getItem("editorTheme") ?? "default";
-const editorAreaTheme = localStorage.getItem("editorAreaTheme") ?? "default";
-const previewAreaTheme = localStorage.getItem("previewAreaTheme") ?? "default";
-
-// 监听 localStorage 主题变化（可选，提升体验）
-window.addEventListener("storage", (event) => {
-    if (event.key === "isDarkTheme") {
-        const dark = event.newValue === "true";
-        editorTheme.value = dark ? "dark" : "default";
-        editorAreaTheme.value = dark ? "pastel-on-dark" : "default";
-        previewAreaTheme.value = dark ? "dark" : "default";
-    }
+// 设置状态
+setState({
+  selectedFile,
+  fileName,
+  editorType,
+  repoTree,
+  defaultExpandedKeys,
+  isInitializing,
+  editorId,
+  newFileType,
+  showNewFileDialog,
+  selectValue,
+  selectedRepo,
+  isProcessing,
 });
 
-// 导出选项
-const options = [
-    { value: 'md', label: 'compile_view.export_md' },
-    { value: 'pdf', label: 'compile_view.export_pdf' },
-    { value: 'html', label: 'compile_view.export_html' },
-    { value: 'docx', label: 'compile_view.export_docx' },
-    { value: 'txt', label: 'compile_view.export_txt' }
-];
-const selectValue = ref(options[0].value);
+// 布局管理
+import {
+  setLayoutState,
+  setLayout,
+  updateEditorPanelSize,
+  setupLayoutListeners,
+  switchEditorType,
+} from "./compile/layout";
 
-const isEditing = ref(false);
-const fileName = ref(t("compile_view.new_note")); // 默认文件名为 "note"
-// 导出文件方法
-const exportFile = () => {
-    const format = selectValue.value;
-    const content = selectedFile.value.content;
-    if (!content.trim()) {
-        ElMessage({
-            message: t('compile_view.empty_input_message'),
-            type: 'error',
-            duration: 2000
-        });
-        return;
+// 设置布局状态
+setLayoutState(
+  {
+    panel1Size,
+    panel2Size,
+    editorPanelSize,
+    splitterWrapper: { value: null }, // 暂时设置为null，实际值会在组件挂载后更新
+    editorType,
+    editorTheme,
+    editorAreaTheme,
+    previewAreaTheme,
+  },
+  t,
+);
+
+// 用户管理
+import {
+  setUserState,
+  handleSettings,
+  initUserInfo,
+  handleAvatarClick,
+  handleLoginLogout,
+} from "./compile/userManagement";
+
+// 设置用户状态
+setUserState(
+  {
+    isLoggedIn,
+    userInfo,
+    selectedPlatform,
+    userMenuRef: { value: null }, // 暂时设置为null，实际值会在组件挂载后更新
+  },
+  t,
+  router,
+);
+
+// 平台和仓库管理
+import {
+  setRepoState,
+  togglePlatform,
+  handleNodeExpand,
+  handleNodeCollapse,
+  openRepoDialog,
+  selectRepo,
+} from "./compile/repoManagement";
+
+// 设置仓库状态
+setRepoState(
+  {
+    selectedPlatform,
+    repos,
+    selectedRepo,
+    repoTree,
+    defaultExpandedKeys,
+    repoAsideRef,
+  },
+  t,
+  router,
+);
+
+// 搜索功能
+import {
+  setSearchState,
+  sortFilesByTime,
+  refreshFiles,
+  handleSearch,
+  resetSearch,
+} from "./compile/search";
+
+// 设置搜索状态
+setSearchState({
+  searchKeyword: { value: "" }, // 暂时设置为空字符串，实际值会在组件挂载后更新
+  timelineFiles,
+});
+
+// 插件消息处理
+import {
+  setExtensionState,
+  handleCrossPageSync,
+  registerExtensionListeners,
+  cleanupExtensionListeners,
+} from "./compile/extensionMessage";
+
+// 设置插件消息状态
+setExtensionState(
+  {
+    selectedFile,
+    editorType,
+    fileName,
+    editorId,
+  },
+  t,
+);
+
+// 打开新建文件对话框
+const openNewFileDialog = () => {
+  newFileType.value = "md"; // 默认md类型
+  showNewFileDialog.value = true;
+};
+
+// 监听编辑器内容变化，实时保存到repoTree
+watch(
+  () => selectedFile.value.content,
+  async (newContent: string, oldContent: string) => {
+    // 1. 基础拦截：正在初始化或内容完全没变
+    if (isInitializing.value || newContent === oldContent) return;
+
+    // 2. 【核心修复】定义什么是“真正的空内容”
+    // 过滤 Quill 常见的空标签：<p><br></p>, <p></p>, 以及纯空格
+    const isActuallyEmpty = (html: string) => {
+      if (!html) return true;
+      const cleanText = html.replace(/<[^>]*>/g, "").trim(); // 剥离 HTML 标签看是否有文字
+      return cleanText === "" && !html.includes("<img"); // 没文字且没图片才算空
+    };
+
+    if (isActuallyEmpty(newContent)) return;
+
+    // 3. 【核心修复】增加“切换锁”判断
+    // 如果当前正在处理文件切换（isProcessing），坚决不自动创建
+    if (isProcessing.value) return;
+
+    // 4. 自动创建逻辑：必须满足既没有 ID 也没有 Name，且不是在切换中
+    if (!selectedFile.value.id && !selectedFile.value.name) {
+      console.log("检测到真正的新内容输入，准备自动创建...");
+      await autoCreateFirstFile(newContent, t);
     }
-    const name = fileName.value || t("compile_view.new_note"); // 使用输入的文件名或默认值
-    switch (format) {
-        case 'md':
-            exportMarkdown(content, name);
-            break;
-        case 'pdf':
-            exportPdf(content, name);
-            break;
-        case 'html':
-            ElMessageBox({
-                title: t('compile_view.export_html_title'),
-                message: t('compile_view.export_html_message'),
-                dangerouslyUseHTMLString: true,
-                showCancelButton: true,
-                confirmButtonText: t('compile_view.dark_mode'),
-                cancelButtonText: t('compile_view.light_mode'),
-                confirmButtonClass: 'export-hmd-cbtn'
-            })
-                .then(() => {
-                    exportHtml(content, 'dark', name)
-                })
-                .catch(() => {
-                    exportHtml(content, 'light', name)
-                })
-            break;
-        case 'docx':
-            exportDocx(content, name);
-            break;
-        case 'txt':
-            exportTxt(content, name);
-            break;
-        default:
-            console.error('Unsupported format');
+  },
+);
+
+// 监听选中文件变化，保存之前的文件内容
+// watch(
+//   () => selectedFile.value.name,
+//   async (newPath, oldPath) => {
+//     if (oldPath && newPath !== oldPath) {
+//       console.log('使用1');
+//       await saveCurrentFileContent();
+//     }
+//   },
+// );
+
+watch(
+  () => fileName.value,
+  async (newFileName) => {
+    // 1. 拦截非法状态
+    if (isInitializing.value || getIsAutoCreating() || isProcessing.value)
+      return;
+
+    if (selectedFile.value.name && newFileName) {
+      const currentExtension = selectedFile.value.name.split(".").pop();
+      const hasExtension = newFileName.includes(".");
+      let finalFileName = newFileName;
+
+      if (!hasExtension && currentExtension) {
+        finalFileName = `${newFileName}.${currentExtension}`;
+      }
+
+      // 避免名字没变时触发逻辑
+      if (finalFileName === selectedFile.value.name) return;
+
+      const originalFileName = selectedFile.value.name;
+
+      // 2. 更新选中文件的内存状态
+      selectedFile.value.name = finalFileName;
+      // 如果你的 path 依赖文件名，也需要更新
+      selectedFile.value.path = finalFileName;
+
+      // 3. 递归更新文件树 (RepoTree)
+      const updateTree = (files: any[]): boolean => {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          if (file.name === originalFileName) {
+            file.name = finalFileName;
+            file.path = finalFileName; // 同步更新 path，确保 Tree 的 Key 生效
+            return true;
+          }
+          if (file.children?.length) {
+            if (updateTree(file.children)) return true;
+          }
+        }
+        return false;
+      };
+
+      const found = updateTree(repoTree.value);
+
+      // 【关键修复 1】如果找到了并修改了，强制触发响应式
+      if (found) {
+        repoTree.value = [...repoTree.value];
+      }
+
+      // 【关键修复 2】同步更新时光流中的显示
+      if (timelineFiles.value) {
+        const timelineFile = timelineFiles.value.find(
+          (f) => f.name === originalFileName,
+        );
+        if (timelineFile) {
+          timelineFile.name = finalFileName;
+          timelineFile.path = finalFileName;
+        }
+      }
+
+      // 4. 执行持久化
+      console.log("使用2 - 正在重命名并同步 UI");
+      await saveCurrentFileContent(originalFileName, selectedFile.value.id);
+
+      // 更新最后一次选择的文件名缓存
+      localStorage.setItem("lastSelectedFile", finalFileName);
     }
-};
+  },
+);
 
-// 保存到云方法（如有实现）
-const saveCloud = () => {
-    // 这里可根据实际需求实现保存到云的逻辑
-    ElMessage({
-        message: t('settings_view.save_not_online'),
-        type: 'warning',
-        duration: 2000
-    });
-};
+onMounted(async () => {
+  // 初始化工作
+  updateEditorPanelSize();
+  initUserInfo();
+  await restoreFilesFromIndexedDB(t);
 
+  // 读取布局
+  const savedLayout = localStorage.getItem("layout");
+  if (savedLayout) setLayout(parseInt(savedLayout));
 
-// ----------------------
-// 打开设置
-// ----------------------
+  // 注册监听器
+  setupLayoutListeners();
+  registerExtensionListeners();
 
-const handleSettings = () => {
-    router.push('/settings');
-};
+  // 处理跨页面跳转同步
+  handleCrossPageSync();
+
+  // 初始化文件列表
+  await sortFilesByTime();
+});
+
+// 清理监听器
+onBeforeUnmount(() => {
+  cleanupExtensionListeners();
+  // 保存最后选中的文件
+  if (selectedFile.value.name) {
+    localStorage.setItem("lastSelectedFile", selectedFile.value.name);
+  }
+});
 </script>
 
 <style scoped>
+/* 动态宽度由 Vue 绑定控制，此处不再设置静态宽度 */
+
+/* 中间面板右边添加线条 */
+.user-aside {
+  border-right: 1px solid var(--el-border-color);
+}
+
 .md-editor {
-    height: 99%;
-    margin-top: 3px;
-    position: relative;
-    z-index: 1001;
-}
-
-.menu {
-    height: 50px;
-}
-
-.menu>>>.el-card__body {
-    padding: 10px;
-}
-
-.menu-toolbar {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-right: auto;
-}
-
-.settings-link {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-}
-
-.export-select {
-    width: 180px;
-}
-
-.export-btn {
-    margin-left: 10px;
-}
-
-.menu a {
-    margin-left: 10px;
-}
-
-#settings-container {
-    position: absolute;
-    top: 10px;
-    right: 25px;
-}
-
-#settings-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-}
-
-#settings-icon {
-    width: 25px;
-    height: 25px;
-}
-
-.file-name-header {
-    display: flex;
-    align-items: center;
-    font-size: 22px;
-    /* font-weight: bold; */
-    color: #303133;
-    max-width: 100%;
-    overflow: hidden;
-}
-
-.notebook-icon {
-    color: #409eff;
-    font-size: 22px;
-    flex-shrink: 0;
-    /* 避免图标被压缩 */
-    margin-right: 8px;
-}
-
-/* 默认只显示文字，不显示图标 */
-.markdown-guide-icon {
-    display: none;
-    font-size: 20px;
-    margin: 0 0 0 10px;
-    vertical-align: middle;
-}
-
-.btn-icon {
-    display: none;
-    font-size: 16px;
-    vertical-align: middle;
-}
-
-/* 移动端（<=768px）隐藏文字，显示图标 */
-@media (max-width: 768px) {
-    .menu-toolbar {
-        gap: 6px;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        transform: scale(0.9);
-        transform-origin: left center;
-    }
-
-    .export-select {
-        width: 100px;
-        font-size: 12px;
-        height: 30px;
-    }
-
-    .export-btn,
-    .save-to-cloud {
-        font-size: 12px;
-        padding: 4px 8px;
-    }
-
-    .markdown-guide-text {
-        display: none;
-    }
-
-    .markdown-guide-icon {
-        display: inline-block;
-    }
-
-    /* 按钮缩小 */
-    .export-btn,
-    .save-to-cloud {
-        font-size: 0;
-        /* 隐藏文字 */
-        padding: 6px 10px;
-    }
-
-    .btn-text {
-        display: none;
-        /* 移动端不显示文字 */
-    }
-
-    .btn-icon {
-        display: inline-flex;
-        /* 显示图标 */
-        font-size: 20px;
-    }
+  height: 100%;
+  position: relative;
+  /* z-index: 1001; */
+  flex: 1;
+  overflow: hidden;
 }
 </style>
