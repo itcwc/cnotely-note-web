@@ -135,6 +135,8 @@
             <li>{{ permissionScripting }}</li>
             <li>{{ permissionNotifications }}</li>
             <li>{{ permissionSidePanel }}</li>
+            <li>{{ permissionWindows }}</li>
+            <li>{{ permissionHostPermissions }}</li>
           </ul>
           <p>{{ t("privacy_policy.extension_user_rights_text") }}</p>
 
@@ -170,7 +172,12 @@ const router = useRouter();
 
 // 返回上一页
 const goBack = () => {
-  router.back();
+  // 检查是否有上一页，如果没有则返回首页
+  if (window.history.length <= 2) {
+    router.push('/');
+  } else {
+    router.back();
+  }
 };
 
 // 将数组类型的翻译值拆分为单独的变量
@@ -237,6 +244,9 @@ const permissionContextMenu = t("privacy_policy.permission_context_menu");
 const permissionScripting = t("privacy_policy.permission_scripting");
 const permissionNotifications = t("privacy_policy.permission_notifications");
 const permissionSidePanel = t("privacy_policy.permission_side_panel");
+const permissionWindows = t("privacy_policy.permission_windows");
+const permissionHostPermissions = t("privacy_policy.permission_host_permissions");
+
 </script>
 
 <style scoped>

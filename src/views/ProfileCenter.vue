@@ -92,10 +92,18 @@
         <!-- 隐私协议与服务条款 -->
         <el-divider style="margin: 20px 0" />
         <div class="legal-links">
-          <el-link class="legal-link" @click="router.push('/privacy-policy')" type="primary">
+          <el-link
+            class="legal-link"
+            @click="router.push('/privacy-policy')"
+            type="primary"
+          >
             {{ t("privacy_policy.title") }}
           </el-link>
-          <el-link class="legal-link" @click="router.push('/terms-of-service')" type="primary">
+          <el-link
+            class="legal-link"
+            @click="router.push('/terms-of-service')"
+            type="primary"
+          >
             {{ t("terms_of_service.title") }}
           </el-link>
         </div>
@@ -442,7 +450,7 @@ onMounted(() => {
 }
 
 .profile-nav-menu :deep(.el-menu-item.is-active) {
-  background-color: var(--el-color-info-light-9);
+  background-color: var(--el-color-info-light-8);
   color: var(--el-color-primary);
 }
 

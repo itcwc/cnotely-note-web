@@ -37,7 +37,7 @@ export const exportPdf = async (options: ExportOptions) => {
   console.log("Exporting as PDF", content);
   console.log("Exporting as isHtmlContent", isHtmlContent);
 
-  const fullHtml = isHtmlContent ? generateFullHtml(content, "https://cnote.itcwc.com/notion-style-light.css") : markdownToHTML(content, "light");
+  const fullHtml = isHtmlContent ? generateFullHtml(content, "https://app.cnotely.com/notion-style-light.css") : markdownToHTML(content, "light");
 
   // 创建隐藏的 DOM 容器
   const container = document.createElement("div");
@@ -137,8 +137,8 @@ export const exportHtml = (options: ExportOptions) => {
 
   const themeCssUrl =
     theme === "dark"
-      ? "https://cnote.itcwc.com/notion-style-dark.css"
-      : "https://cnote.itcwc.com/notion-style-light.css";
+      ? "https://app.cnotely.com/notion-style-dark.css"
+      : "https://app.cnotely.com/notion-style-light.css";
 
   const fullHtml = isHtmlContent ? generateFullHtml(content, themeCssUrl) : markdownToHTML(content, theme);
 
@@ -150,7 +150,7 @@ export const exportDocx = (options: ExportOptions) => {
   console.log("Exporting as DOCX");
   const { content, fileName, isHtmlContent = false } = options;
 
-  const fullHtml = isHtmlContent ? generateFullHtml(content, "https://cnote.itcwc.com/notion-style-light.css") : markdownToHTML(content, "light");
+  const fullHtml = isHtmlContent ? generateFullHtml(content, "https://app.cnotely.com/notion-style-light.css") : markdownToHTML(content, "light");
 
   asBlob(fullHtml)
     .then((data) => {
@@ -197,8 +197,8 @@ const generateFullHtml = (htmlContent: string, themeCssUrl: string): string => {
 export const markdownToHTML = (content: string, theme: "light" | "dark") => {
   const themeCssUrl =
     theme === "dark"
-      ? "https://cnote.itcwc.com/notion-style-dark.css"
-      : "https://cnote.itcwc.com/notion-style-light.css";
+      ? "https://app.cnotely.com/notion-style-dark.css"
+      : "https://app.cnotely.com/notion-style-light.css";
 
   // 1. 生成唯一的临时 ID，防止 ID 冲突
   const uniqueId = `temp_md_render_${Date.now()}`;
