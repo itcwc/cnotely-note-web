@@ -146,7 +146,12 @@ const router = useRouter();
 
 // 返回上一页
 const goBack = () => {
-  router.back();
+  // 检查是否有上一页，如果没有则返回首页
+  if (window.history.length <= 2) {
+    router.push('/');
+  } else {
+    router.back();
+  }
 };
 
 // 将数组类型的翻译值拆分为单独的变量

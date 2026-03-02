@@ -635,6 +635,8 @@
     "permission_scripting": "Scripting: Inject code into web pages (e.g., highlighting text) to enable interactive features.",
     "permission_notifications": "Notifications: Send notifications to inform users of important events or successful operations.",
     "permission_side_panel": "Side Panel: Display a sidebar for users to edit clipped content conveniently.",
+    "permission_windows": "Windows: Create and manage browser windows to display extension content.",
+    "permission_host_permissions": "Host Permissions: The extension requires access to all URLs to enable its core 'Floating Action Button' and 'Quick Clip' features on any webpage a user visits. This allows users to capture text, images, and HTML content directly into their notes without interrupting their workflow. The extension only reads the DOM content of the active page when the user explicitly interacts with the clipping interface. No user browsing data is collected, stored, or transmitted to external servers beyond the snippets the user chooses to save.",
     "extension_user_rights": "User Rights",
     "extension_user_rights_text": "Users can view, edit, or delete data stored by the extension at any time. If users no longer wish to use the extension, they can uninstall it and delete all related data.",
     "policy_updates": "Updates to Privacy Policy",
@@ -656,7 +658,7 @@
       "html2canvas - Web page screenshots",
       "file-saver - File download"
     ],
-    "your_rights_text": "As a user, you have the following rights:" 
+    "your_rights_text": "As a user, you have the following rights:"
   },
   "account_settings": {
     "title": "Account Settings",
