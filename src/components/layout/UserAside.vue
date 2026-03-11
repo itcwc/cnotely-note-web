@@ -16,7 +16,7 @@
                   ? userInfo.nickname
                     ? userInfo.nickname.slice(0, 2)
                     : "U"
-                  : t('compile_view.login')
+                  : t("compile_view.login")
               }}
             </el-avatar>
           </template>
@@ -28,7 +28,7 @@
                   ? userInfo.nickname
                     ? userInfo.nickname.slice(0, 2)
                     : "U"
-                  : t('compile_view.login')
+                  : t("compile_view.login")
               }}
             </el-avatar>
           </template>
@@ -49,7 +49,9 @@
             size="16"
             :strokeWidth="3"
           />
-          <span v-if="panel1Size >= 200" class="logout-text">{{ t('compile_view.logout') }}</span>
+          <span v-if="panel1Size >= 200" class="logout-text">{{
+            t("compile_view.logout")
+          }}</span>
         </template>
         <template v-else>
           <login
@@ -59,7 +61,9 @@
             size="16"
             :strokeWidth="3"
           />
-          <span v-if="panel1Size >= 200" class="logout-text">{{ t('compile_view.login') }}</span>
+          <span v-if="panel1Size >= 200" class="logout-text">{{
+            t("compile_view.login")
+          }}</span>
         </template>
       </div>
 
@@ -78,7 +82,7 @@
           class="file-add-button-large"
           @click="openNewFileDialog"
         >
-          <div class="file-add-text">{{ t('compile_view.new_note') }}</div>
+          <div class="file-add-text">{{ t("compile_view.new_note") }}</div>
         </el-button>
       </div>
 
@@ -227,11 +231,33 @@
                 :underline="false"
                 type="primary"
               >
-                {{ 
+                {{
                   locale === "zh-CN"
                     ? t("compile_view.markdown_guide_cn")
                     : t("compile_view.markdown_guide_en")
                 }}
+              </el-link>
+            </div>
+
+            <!-- 服务条款和隐私协议链接 -->
+            <div class="legal-links-container">
+              <br />
+              <el-link
+                :href="'/terms-of-service'"
+                target="_blank"
+                :underline="false"
+                type="primary"
+              >
+                {{ t("login.checkbox.terms_of_service") }}
+              </el-link>
+              <br />
+              <el-link
+                :href="'/privacy-policy'"
+                target="_blank"
+                :underline="false"
+                type="primary"
+              >
+                {{ t("login.checkbox.privacy_policy") }}
               </el-link>
             </div>
           </div>
@@ -247,8 +273,14 @@
             @change="changeLanguage"
             class="language-select language-select-large"
           >
-            <el-option value="en" :label="t('compile_view.english')"></el-option>
-            <el-option value="zh-CN" :label="t('compile_view.chinese')"></el-option>
+            <el-option
+              value="en"
+              :label="t('compile_view.english')"
+            ></el-option>
+            <el-option
+              value="zh-CN"
+              :label="t('compile_view.chinese')"
+            ></el-option>
           </el-select>
 
           <el-button
@@ -268,13 +300,26 @@
         </div>
 
         <!-- 语言选择弹窗 -->
-        <el-dialog v-model="showLanguageDialog" :title="t('settings_view.select_language')" width="200px" center>
+        <el-dialog
+          v-model="showLanguageDialog"
+          :title="t('settings_view.select_language')"
+          width="200px"
+          center
+        >
           <div class="language-options">
-            <div class="language-option" :class="{ 'selected': selectedLanguage === 'en' }" @click="changeLanguage('en')">
-              {{ t('settings_view.english') }}
+            <div
+              class="language-option"
+              :class="{ selected: selectedLanguage === 'en' }"
+              @click="changeLanguage('en')"
+            >
+              {{ t("settings_view.english") }}
             </div>
-            <div class="language-option" :class="{ 'selected': selectedLanguage === 'zh-CN' }" @click="changeLanguage('zh-CN')">
-              {{ t('settings_view.chinese') }}
+            <div
+              class="language-option"
+              :class="{ selected: selectedLanguage === 'zh-CN' }"
+              @click="changeLanguage('zh-CN')"
+            >
+              {{ t("settings_view.chinese") }}
             </div>
           </div>
         </el-dialog>
@@ -500,7 +545,7 @@ const handleAvatarClick = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
   width: 100%;
   margin: auto 0 5px 0;
   /* 合并 margin 声明，确保 margin-top: auto 生效 */
@@ -673,6 +718,11 @@ const handleAvatarClick = () => {
   margin-top: 20px;
 }
 
+/* 法律链接容器样式 */
+/* .legal-links-container {
+  margin-top: 20px;
+} */
+
 /* 自定义分割线样式 */
 .custom-divider {
   margin: 0;
@@ -708,6 +758,44 @@ const handleAvatarClick = () => {
   flex-direction: column;
   gap: 8px;
   padding: 10px 0;
+}
+
+.language-option {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.language-option:hover {
+  background-color: var(--el-color-primary-light-9);
+}
+
+.language-option.selected {
+  background-color: var(--el-color-primary-light-9);
+  font-weight: 500;
+}
+
+/* 设置按钮样式 */
+/* .settings-button {
+  按钮样式由 Element Plus 自动处理
+} */
+
+/* 设置图标样式 */
+.settings-icon {
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+}
+
+.markdown-guide-icon {
+  vertical-align: middle;
+}
+
+/* 隐藏语言选择器的下拉箭头 */
+.language-select-no-arrow :deep(.el-select__caret) {
+  display: none;
 }
 
 .language-option {
