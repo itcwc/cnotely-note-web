@@ -434,6 +434,8 @@
             </span>
           </template>
         </el-dialog>
+
+        
       </el-container>
     </div>
   </el-aside>
@@ -1323,6 +1325,19 @@ const handleNodeClick = (data: TreeData, node: any) => {
 
 /* 使用 Element Plus 的 CSS 变量适配黑暗模式 */
 
+/* 设置 el-container 的样式 */
+el-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 设置 el-main 的样式 */
+el-main {
+  flex: 1;
+  overflow-y: auto;
+}
+
 /* 设置 repo-header 的样式 */
 .repo-header {
   display: flex;
@@ -1331,6 +1346,10 @@ const handleNodeClick = (data: TreeData, node: any) => {
   padding: 0 16px;
   height: 60px;
   border-bottom: 1px solid var(--el-border-color);
+  position: sticky;
+  top: 0;
+  background-color: var(--el-bg-color);
+  z-index: 10;
 }
 
 /* 设置 el-card__header 的样式 */
