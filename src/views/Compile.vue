@@ -63,6 +63,7 @@
       v-model="showNewFileDialog"
       :title="t('compile_view.new_file_dialog')"
       width="420px"
+      class="unified-choice-dialog"
     >
       <div class="new-file-type-selector">
         <div
