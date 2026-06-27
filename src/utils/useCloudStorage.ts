@@ -75,7 +75,7 @@ export function useCloudStorage() {
                 ),
                 h("div", { style: "display: flex; gap: 12px; justify-content: center;" }, [
                     h("button", {
-                        style: "display:flex;align-items:center;gap:8px;padding:10px 20px;border:1px solid var(--dt-border);border-radius:8px;background:var(--dt-bg-surface);color:var(--dt-text-primary);cursor:pointer;font-size:14px;transition:all .2s;",
+                        style: "display:flex;align-items:center;gap:8px;padding:10px 20px;border:1px solid #30363d;border-radius:8px;background:#1a1a1a;color:#fff;cursor:pointer;font-size:14px;transition:all .2s;",
                         onClick: () => {
                             ElMessageBox.close();
                             loginWithGitHub();
@@ -87,7 +87,7 @@ export function useCloudStorage() {
                         t("cloud_storage.auth_github_btn") || "GitHub 授权"
                     ]),
                     h("button", {
-                        style: "display:flex;align-items:center;gap:8px;padding:10px 20px;border:1px solid var(--dt-border);border-radius:8px;background:var(--dt-bg-hover);color:var(--dt-text-primary);cursor:pointer;font-size:14px;transition:all .2s;",
+                        style: "display:flex;align-items:center;gap:8px;padding:10px 20px;border:1px solid #e0e0e0;border-radius:8px;background:#fff;color:#333;cursor:pointer;font-size:14px;transition:all .2s;",
                         onClick: () => {
                             ElMessageBox.close();
                             loginWithGoogle();

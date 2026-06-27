@@ -139,15 +139,15 @@
       class="unified-choice-dialog"
     >
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="choice-btn" @click="handleLocalImport">
+        <button class="choice-btn choice-btn-dark" @click="handleLocalImport">
           <el-icon><Upload /></el-icon>
           {{ t("compile_view.local_import") }}
         </button>
-        <button class="choice-btn" @click="handleGoogleDriveImport">
+        <button class="choice-btn choice-btn-light" @click="handleGoogleDriveImport">
           <img src="/imgs/icon/google_drive.png" alt="Google Drive" style="width:18px;height:18px;" />
           {{ t("compile_view.google_drive_import") }}
         </button>
-        <button class="choice-btn" @click="openRepoDialogLocal">
+        <button class="choice-btn choice-btn-dark" @click="openRepoDialogLocal">
           <img src="/imgs/icon/github_favicon.svg" alt="GitHub" style="width:18px;height:18px;" />
           {{ t("compile_view.github_import") }}
         </button>
