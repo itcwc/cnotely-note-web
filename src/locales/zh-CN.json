@@ -799,12 +799,16 @@
         "github_error": "GitHub 错误"
     },
     "cloud_storage": {
-        "no_default_provider": "请先设置默认存储提供者",
+        "no_default_provider": "请先授权登录后再进行云端操作",
+        "auth_dialog_title": "🔐 需要授权",
+        "auth_dialog_desc": "请先授权登录后再进行云端操作",
+        "auth_github_btn": "GitHub 授权",
+        "auth_google_btn": "Google 授权",
         "sync_failed": "同步失败，请检查网络或授权",
         "github_sync_success": "已成功同步至 GitHub",
         "github_sync_info": "GitHub 仅支持从云端导入的文件进行同步",
         "google_sync_success": "已成功保存至 Google Drive",
-        "not_logged_in": "请先登录后再进行云端操作",
+        "not_logged_in": "请先授权登录后再进行云端操作",
         "content_empty": "文件内容不能为空"
     }
 }

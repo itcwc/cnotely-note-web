@@ -3,3 +3,31 @@
     border-color: black;
     color: white;
 }
+
+/* 云端授权选择弹窗 */
+.cloud-auth-dialog {
+    border-radius: 16px !important;
+    overflow: hidden;
+}
+.cloud-auth-dialog .el-message-box__header {
+    padding: 20px 20px 0;
+    text-align: center;
+}
+.cloud-auth-dialog .el-message-box__title {
+    font-size: 16px;
+    font-weight: 600;
+}
+.cloud-auth-dialog .el-message-box__content {
+    padding: 16px 24px 24px;
+}
+/* 覆盖 el-message-box__container 的 flex 布局，避免内容左偏 */
+.cloud-auth-dialog .el-message-box__container {
+    display: block;
+}
+.cloud-auth-dialog .el-message-box__btns {
+    display: none;
+}
+.cloud-auth-dialog .el-message-box__headerbtn {
+    top: 12px;
+    right: 12px;
+}
