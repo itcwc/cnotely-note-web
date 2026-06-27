@@ -94,14 +94,14 @@
         "login": "登录：",
         "current_account": "当前账号：",
         "logout": "登出",
-    "language_desc": "界面展示语言",
-    "login_desc": "登录后可同步设置和文件",
-    "theme_light": "浅色",
-    "theme_dark": "深色",
-    "theme_sepia": "护眼",
-    "theme_light_desc": "清爽明亮的浅色界面",
-    "theme_dark_desc": "柔和的深色暗系界面",
-    "theme_sepia_desc": "护眼的米色暖系界面"
+        "language_desc": "界面展示语言",
+        "login_desc": "登录后可同步设置和文件",
+        "theme_light": "浅色",
+        "theme_dark": "深色",
+        "theme_sepia": "护眼",
+        "theme_light_desc": "清爽明亮的浅色界面",
+        "theme_dark_desc": "柔和的深色暗系界面",
+        "theme_sepia_desc": "护眼的米色暖系界面"
     },
     "compile_view": {
         "no_files_yet": "暂无文件",
@@ -802,13 +802,16 @@
         "no_default_provider": "请先授权登录后再进行云端操作",
         "auth_dialog_title": "🔐 需要授权",
         "auth_dialog_desc": "请先授权登录后再进行云端操作",
-        "auth_github_btn": "GitHub 授权",
-        "auth_google_btn": "Google 授权",
+        "auth_github_btn": "GitHub",
+        "auth_google_btn": "Google",
         "sync_failed": "同步失败，请检查网络或授权",
         "github_sync_success": "已成功同步至 GitHub",
         "github_sync_info": "GitHub 仅支持从云端导入的文件进行同步",
         "google_sync_success": "已成功保存至 Google Drive",
         "not_logged_in": "请先授权登录后再进行云端操作",
-        "content_empty": "文件内容不能为空"
+        "content_empty": "文件内容不能为空",
+        "status_none": "无需授权",
+        "status_connected": "已连接",
+        "status_disconnected": "未连接"
     }
 }

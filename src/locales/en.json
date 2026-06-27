@@ -809,13 +809,16 @@
     "no_default_provider": "Please authorize and log in before performing cloud operations",
     "auth_dialog_title": "🔐 Authorization Required",
     "auth_dialog_desc": "Please authorize and log in before performing cloud operations",
-    "auth_github_btn": "Authorize GitHub",
-    "auth_google_btn": "Authorize Google",
+    "auth_github_btn": "GitHub",
+    "auth_google_btn": "Google",
     "sync_failed": "Sync failed, please check network or authorization",
     "github_sync_success": "Successfully synced to GitHub",
     "github_sync_info": "GitHub only supports syncing files imported from the cloud",
     "google_sync_success": "Successfully saved to Google Drive",
     "not_logged_in": "Please authorize and log in before performing cloud operations",
-    "content_empty": "File content cannot be empty"
+    "content_empty": "File content cannot be empty",
+    "status_none": "No auth needed",
+    "status_connected": "Connected",
+    "status_disconnected": "Disconnected"
   }
 }
