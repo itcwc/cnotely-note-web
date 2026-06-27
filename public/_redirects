@@ -1,0 +1,6 @@
+# GitHub OAuth token 代理（绕过浏览器 CORS）
+# 浏览器请求 /api/github/token → 代理到 GitHub access_token 接口
+/api/github/token  https://github.com/login/oauth/access_token  200
+
+# SPA fallback（所有未匹配路径走 index.html）
+/*  /index.html  200

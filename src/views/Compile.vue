@@ -6,7 +6,6 @@
         :panel1Size="panel1Size"
         :isLoggedIn="isLoggedIn"
         :userInfo="userInfo"
-        @setLayout="setLayout"
         @handleSettings="handleSettings"
         @openNewFileDialog="openNewFileDialog"
         @handleLoginLogout="handleLoginLogout"
@@ -31,6 +30,7 @@
         @handleNodeClick="handleNodeClick"
         @exportFile="handleExportFile"
         @deleteFile="handleDeleteFile"
+        @renameFile="handleRenameFile"
         @handleSearch="handleSearch"
         @resetSearch="resetSearch"
         @importFile="handleImportFile"
@@ -48,14 +48,13 @@
         :previewAreaTheme="previewAreaTheme"
         :selectedFile="selectedFile"
         :fileName="fileName"
-        :editor-type="editorType"
-        @switchEditorType="switchEditorType"
         @exportFile="exportFile"
         @saveCloud="saveCloud"
         @update:fileName="(val) => (fileName = val)"
         @contentChange="handleContentChange"
         @openNewFileDialog="openNewFileDialog"
         @importFile="handleImportFile"
+        @openRepoDialog="handleEditorOpenRepoDialog"
       />
     </el-container>
 
@@ -63,16 +62,40 @@
     <el-dialog
       v-model="showNewFileDialog"
       :title="t('compile_view.new_file_dialog')"
-      width="400px"
+      width="420px"
     >
-      <el-form label-position="top">
-        <el-form-item :label="t('compile_view.file_type')">
-          <el-radio-group v-model="newFileType">
-            <el-radio label="md">{{ t("compile_view.markdown") }}</el-radio>
-            <el-radio label="html">{{ t("compile_view.rich_text") }}</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
+      <div class="new-file-type-selector">
+        <div
+          class="type-card"
+          :class="{ active: newFileMode === 'markdown' }"
+          @click="newFileMode = 'markdown'"
+        >
+          <div class="type-icon md-icon">
+            <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+              <path fill="currentColor" d="M100 152v56a12 12 0 0 1-24 0v-17.93l-6.17 8.81a12 12 0 0 1-19.66 0L44 190.07V208a12 12 0 0 1-24 0v-56a12 12 0 0 1 21.83-6.88L60 171.07l18.17-25.95A12 12 0 0 1 100 152m84 28a40 40 0 0 1-40 40h-16a12 12 0 0 1-12-12v-56a12 12 0 0 1 12-12h16a40 40 0 0 1 40 40m-24 0a16 16 0 0 0-16-16h-4v32h4a16 16 0 0 0 16-16m60-92v136a12 12 0 0 1-24 0V104h-48a12 12 0 0 1-12-12V44H60v64a12 12 0 0 1-24 0V40a20 20 0 0 1 20-20h96a12 12 0 0 1 8.49 3.52l56 56A12 12 0 0 1 220 88m-60-8h23l-23-23Z"/>
+            </svg>
+          </div>
+          <div class="type-info">
+            <div class="type-name">{{ t("compile_view.markdown_note") }}</div>
+            <div class="type-desc">{{ t("compile_view.markdown_note_desc") }}</div>
+          </div>
+        </div>
+        <div
+          class="type-card"
+          :class="{ active: newFileMode === 'richtext' }"
+          @click="newFileMode = 'richtext'"
+        >
+          <div class="type-icon rt-icon">
+            <svg width="32" height="32" viewBox="0 0 256 256" fill="none">
+              <path fill="currentColor" d="M48 128a12 12 0 0 0 12-12V44h76v48a12 12 0 0 0 12 12h48v12a12 12 0 0 0 24 0V88a12 12 0 0 0-3.51-8.49l-56-56A12 12 0 0 0 152 20H56a20 20 0 0 0-20 20v76a12 12 0 0 0 12 12m135-48h-23V57ZM68 160v48a12 12 0 0 1-24 0v-12H32v12a12 12 0 0 1-24 0v-48a12 12 0 0 1 24 0v12h12v-12a12 12 0 0 1 24 0m60 0a12 12 0 0 1-12 12h-4v36a12 12 0 0 1-24 0v-36h-4a12 12 0 0 1 0-24h32a12 12 0 0 1 12 12m72 0v48a12 12 0 0 1-24 0v-9.36l-.11.16a12 12 0 0 1-19.78 0l-.11-.16V208a12 12 0 0 1-24 0v-48a12 12 0 0 1 21.89-6.8L166 170.82l12.11-17.62A12 12 0 0 1 200 160m56 48a12 12 0 0 1-12 12h-24a12 12 0 0 1-12-12v-48a12 12 0 0 1 24 0v36h12a12 12 0 0 1 12 12"/>
+            </svg>
+          </div>
+          <div class="type-info">
+            <div class="type-name">{{ t("compile_view.rich_text_note") }}</div>
+            <div class="type-desc">{{ t("compile_view.rich_text_note_desc") }}</div>
+          </div>
+        </div>
+      </div>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="showNewFileDialog = false">{{
@@ -114,9 +137,8 @@ const {
   editorTheme,
   editorAreaTheme,
   previewAreaTheme,
-  editorType,
   showNewFileDialog,
-  newFileType,
+  newFileMode,
   panel1Size,
   panel2Size,
   editorPanelSize,
@@ -129,7 +151,6 @@ const {
   repoTree,
   defaultExpandedKeys,
   fileName,
-  editorId,
   selectValue,
 } = createState();
 
@@ -144,6 +165,7 @@ import {
   autoCreateFirstFile,
   handleContentChange as originalHandleContentChange,
   handleDeleteFile as originalHandleDeleteFile,
+  handleRenameFile as originalHandleRenameFile,
   handleImportFile as originalHandleImportFile,
   handleImportSelectedFiles as originalHandleImportSelectedFiles,
   handleExportFile as originalHandleExportFile,
@@ -158,6 +180,8 @@ import {
 // 包装事件处理函数，确保传递 t 参数
 const handleContentChange = (file: any) => originalHandleContentChange(file);
 const handleDeleteFile = (file: any) => originalHandleDeleteFile(file, t);
+const handleRenameFile = (file: any, newName: string) =>
+  originalHandleRenameFile(file, newName, t);
 const handleImportFile = (importData: any) =>
   originalHandleImportFile(importData, t);
 const handleImportSelectedFiles = (repo: any, selectedFiles: any[]) =>
@@ -171,13 +195,12 @@ const createNewFile = () => originalCreateNewFile(t);
 setState({
   selectedFile,
   fileName,
-  editorType,
   repoTree,
+  timelineFiles,
   defaultExpandedKeys,
   isInitializing,
-  editorId,
-  newFileType,
   showNewFileDialog,
+  newFileMode,
   selectValue,
   selectedRepo,
   isProcessing,
@@ -186,10 +209,8 @@ setState({
 // 布局管理
 import {
   setLayoutState,
-  setLayout,
   updateEditorPanelSize,
   setupLayoutListeners,
-  switchEditorType,
 } from "./compile/layout";
 
 // 设置布局状态
@@ -199,7 +220,6 @@ setLayoutState(
     panel2Size,
     editorPanelSize,
     splitterWrapper: { value: null }, // 暂时设置为null，实际值会在组件挂载后更新
-    editorType,
     editorTheme,
     editorAreaTheme,
     previewAreaTheme,
@@ -279,17 +299,22 @@ import {
 setExtensionState(
   {
     selectedFile,
-    editorType,
     fileName,
-    editorId,
   },
   t,
 );
 
 // 打开新建文件对话框
 const openNewFileDialog = () => {
-  newFileType.value = "md"; // 默认md类型
   showNewFileDialog.value = true;
+};
+
+// 处理 EditorPanel 中 GitHub 导入按钮的点击
+const handleEditorOpenRepoDialog = () => {
+  // 打开 RepoAside 的仓库选择对话框
+  repoAsideRef.value?.openRepoSelectDialog();
+  // 触发仓库列表加载
+  openRepoDialog();
 };
 
 // 监听编辑器内容变化，实时保存到repoTree
@@ -408,10 +433,6 @@ onMounted(async () => {
   initUserInfo();
   await restoreFilesFromIndexedDB(t);
 
-  // 读取布局
-  const savedLayout = localStorage.getItem("layout");
-  if (savedLayout) setLayout(parseInt(savedLayout));
-
   // 注册监听器
   setupLayoutListeners();
   registerExtensionListeners();
@@ -447,5 +468,72 @@ onBeforeUnmount(() => {
   /* z-index: 1001; */
   flex: 1;
   overflow: hidden;
+}
+
+.new-file-type-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.type-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 2px solid var(--dt-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--dt-bg-surface);
+}
+
+.type-card:hover {
+  border-color: var(--dt-accent);
+  background: var(--dt-bg-hover);
+}
+
+.type-card.active {
+  border-color: var(--dt-accent);
+  background: var(--dt-bg-active);
+}
+
+.type-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.md-icon {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.rt-icon {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+}
+
+.type-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.type-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dt-text-primary);
+  margin-bottom: 4px;
+}
+
+.type-desc {
+  font-size: 13px;
+  color: var(--dt-text-secondary);
+  line-height: 1.4;
 }
 </style>

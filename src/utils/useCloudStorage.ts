@@ -10,6 +10,24 @@ export function useCloudStorage() {
     const userInfo = ref<any>(null);
     const isSyncing = ref(false);
 
+    // Google Drive 文件 ID 映射：本地文件名 → Google Drive fileId
+    // 用于后续同步更新，避免按文件名查找（文件名可能被用户修改）
+    const googleFileIdMap = ref<Record<string, string>>({});
+
+    // 从 localStorage 恢复 fileIdMap
+    const loadGoogleFileIdMap = () => {
+        try {
+            const raw = localStorage.getItem("google_file_id_map");
+            if (raw) googleFileIdMap.value = JSON.parse(raw);
+        } catch { }
+    };
+    const saveGoogleFileIdMap = () => {
+        localStorage.setItem("google_file_id_map", JSON.stringify(googleFileIdMap.value));
+    };
+
+    // 初始化时恢复
+    loadGoogleFileIdMap();
+
     // 初始化用户信息
     const initUserInfo = () => {
         const storedUserInfo = localStorage.getItem("user_info");
@@ -27,6 +45,24 @@ export function useCloudStorage() {
     });
 
     /**
+     * 获取当前有效的存储提供者（自动检测）
+     */
+    const getProvider = (): string | null => {
+        if (userInfo.value?.default_storage_provider) {
+            return userInfo.value.default_storage_provider;
+        }
+        // 自动检测：从 localStorage 读取 OAuth 登录信息
+        try {
+            const raw = localStorage.getItem("user_info");
+            if (raw) {
+                const info = JSON.parse(raw);
+                if (info?.provider) return info.provider;
+            }
+        } catch { }
+        return null;
+    };
+
+    /**
      * 核心保存逻辑
      * @param fileName 当前文件名
      * @param content 文件内容
@@ -37,12 +73,13 @@ export function useCloudStorage() {
             ElMessage.warning(t("cloud_storage.not_logged_in"));
             return false;
         }
-        
-        if (!userInfo.value.default_storage_provider) {
-            ElMessage.warning(t("cloud_storage.no_default_provider"));
+
+        const provider = getProvider();
+        if (!provider) {
+            ElMessage.warning(t("cloud_storage.no_default_provider") || "请先登录并授权存储平台");
             return false;
         }
-        
+
         // 验证文件内容不能为空
         if (!content || content.trim() === '') {
             ElMessage.warning(t("cloud_storage.content_empty"));
@@ -51,11 +88,14 @@ export function useCloudStorage() {
 
         // 1. 处理文件名后缀
         let fileNameValue = fileName || "untitled";
+        // 不再根据 editorType 强制补后缀，保留用户原始文件名
+        // 调用方（EditorPanel.vue）应保证传入正确的文件名和后缀
         if (!fileNameValue.includes(".")) {
+            // 只在完全没有后缀时，根据编辑器类型补一个默认后缀
             fileNameValue += (editorType === "editormd" ? ".md" : ".html");
         }
+        // console.log('fileNameValue', fileNameValue);
 
-        const provider = userInfo.value.default_storage_provider;
         isSyncing.value = true;
 
         try {
@@ -105,14 +145,15 @@ export function useCloudStorage() {
     };
 
     const handleGoogleUpload = async (fileName: string, content: string) => {
-        await googleDriveApi.syncFile(fileName, content);
+        // 优先用缓存的 fileId 直接更新（避免按文件名查找，文件名可能被改）
+        const cachedFileId = googleFileIdMap.value[fileName];
+        const result = await googleDriveApi.syncFile(fileName, content, cachedFileId);
 
-        // await indexedDBHelper.saveFile({
-        //     name: fileName,
-        //     content,
-        //     type: fileName.endsWith(".md") ? "md" : "html",
-        //     // provider: "google",
-        // });
+        // 缓存/更新 Google Drive fileId，下次同步直接用 ID
+        if (result?.id) {
+            googleFileIdMap.value[fileName] = result.id;
+            saveGoogleFileIdMap();
+        }
 
         ElMessage.success(t("cloud_storage.google_sync_success"));
         return true;

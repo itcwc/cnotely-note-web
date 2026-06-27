@@ -17,16 +17,17 @@ import { sortFilesByTime } from "./search";
 interface State {
   selectedFile: any;
   fileName: any;
-  editorType: any;
   repoTree: any;
-  defaultExpandedKeys: any;
-  isInitializing: any;
-  editorId: any;
-  newFileType: any;
-  showNewFileDialog: any;
-  selectValue: any;
-  selectedRepo: any;
-  isProcessing: any;
+  timelineFiles?: any;
+  defaultExpandedKeys?: any;
+  isInitializing?: any;
+  editorId?: any;
+  newFileType?: any;
+  newFileMode?: any;
+  showNewFileDialog?: any;
+  selectValue?: any;
+  selectedRepo?: any;
+  isProcessing?: any;
 }
 
 // 状态对象，将在 Compile.vue 中设置
@@ -44,6 +45,38 @@ export const setState = (s: State) => {
 // 获取自动创建标志（供外部使用）
 export const getIsAutoCreating = () => isAutoCreating;
 
+// 生成唯一文件名（基于日期，重复则递增）
+const generateUniqueFileName = (t: any, extension: string = ".md"): string => {
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const baseName = `${t("compile_view.new_note")}-${dateStr}`;
+
+  if (!state) return `${baseName}${extension}`;
+
+  const existingNames = new Set<string>();
+
+  const collectNames = (files: TreeData[]) => {
+    for (const f of files) {
+      existingNames.add(f.name.toLowerCase());
+      if (f.children) collectNames(f.children);
+    }
+  };
+  if (state.repoTree?.value) collectNames(state.repoTree.value);
+  if (state.timelineFiles?.value) {
+    for (const f of state.timelineFiles.value) {
+      existingNames.add(f.name.toLowerCase());
+    }
+  }
+
+  let candidate = `${baseName}${extension}`;
+  let counter = 1;
+  while (existingNames.has(candidate.toLowerCase())) {
+    candidate = `${baseName}(${counter})${extension}`;
+    counter++;
+  }
+  return candidate;
+};
+
 // 自动创建第一个文件
 const autoCreateFirstFile = async (initialContent: string, t: any) => {
   if (!state) return;
@@ -51,20 +84,9 @@ const autoCreateFirstFile = async (initialContent: string, t: any) => {
   isAutoCreating = true;
 
   try {
-    // 1. 【核心逻辑】根据当前活跃的编辑器类型来决定文件后缀
-    // 假设 state.editorType.value 的值是 'editormd' 或 'quill'
-    const currentMode = state.editorType.value;
-    const isHtml = currentMode === "quill";
-    const extension = isHtml ? ".html" : ".md";
-    const fileType = isHtml ? "html" : "md";
-
-    // 2. 生成唯一文件名（使用计数器）
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-
-    let counter = parseInt(localStorage.getItem('fileCounter') || '1');
-    const baseName = `${t("compile_view.new_note")}-${dateStr}(${counter})`;
-    const fullFileName = baseName + extension;
+    const fileType = "md";
+    const fullFileName = generateUniqueFileName(t);
+    const baseName = fullFileName.replace(/\.md$/i, "");
 
     // 3. 更新状态，确保 ID 彻底清空以防污染
     state.selectedFile.value = {
@@ -112,11 +134,10 @@ const autoCreateFirstFile = async (initialContent: string, t: any) => {
       updatedAt: Date.now(),
     };
 
-    // 传入新对象，触发“插队”逻辑
+    // 传入新对象，触发"插队"逻辑
     await sortFilesByTime(fileToDisplay);
 
-    // 7. 更新计数器和侧边栏
-    localStorage.setItem('fileCounter', (counter + 1).toString());
+    // 7. 更新侧边栏
     await sortFilesByTime();
     localStorage.setItem("lastSelectedFile", fullFileName);
 
@@ -139,8 +160,62 @@ const handleContentChange = async (file: SelectedFile) => {
 
   // 保存到repoTree和IndexedDB，传入文件ID
   // 重复触发1
-  console.log("使用6");
+  // console.log("使用6");
   await saveCurrentFileContent(undefined, file.id);
+};
+
+// 处理重命名文件事件
+const handleRenameFile = async (file: TreeData, newName: string, t: any) => {
+  if (!state) return;
+
+  const renameFileInTree = (files: TreeData[]): boolean => {
+    for (let i = 0; i < files.length; i++) {
+      const f = files[i];
+      if (f.name === file.name) {
+        files[i] = { ...f, name: newName };
+        return true;
+      }
+      if (f.children && f.children.length > 0) {
+        if (renameFileInTree(f.children)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  renameFileInTree(state.repoTree.value);
+
+  // 同步更新 timelineFiles
+  if (state.timelineFiles?.value) {
+    const timelineIndex = state.timelineFiles.value.findIndex(
+      (f: TreeData) => f.name === file.name,
+    );
+    if (timelineIndex !== -1) {
+      state.timelineFiles.value[timelineIndex] = {
+        ...state.timelineFiles.value[timelineIndex],
+        name: newName,
+      };
+      state.timelineFiles.value = [...state.timelineFiles.value];
+    }
+  }
+
+  if (state.selectedFile.value.name === file.name) {
+    state.selectedFile.value = {
+      ...state.selectedFile.value,
+      name: newName,
+    };
+    const nameWithoutExt = newName.replace(/\.[^/.]+$/, "");
+    state.fileName.value = nameWithoutExt;
+  }
+
+  try {
+    await indexedDBHelper.renameFile(file.name, newName);
+    console.log("文件已重命名:", file.name, "->", newName);
+    ElMessage.success(t("compile_view.file_renamed"));
+  } catch (error) {
+    console.error("重命名文件失败:", error);
+  }
 };
 
 // 处理删除文件事件
@@ -235,9 +310,6 @@ const handleImportFile = async (importData: {
 
     // 设置文件名
     state.fileName.value = baseName;
-
-    // 设置编辑器类型
-    state.editorType.value = importData.type === "md" ? "editormd" : "quill";
 
     console.log("保存2");
     // 保存到IndexedDB
@@ -392,17 +464,21 @@ const createNewFile = async (t: any) => {
   state.isProcessing.value = true;
 
   try {
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-    let counter = parseInt(localStorage.getItem('fileCounter') || '1');
-    const baseName = `${dateStr}(${counter})`;
-    const finalFileName = baseName + (state.newFileType.value === "md" ? ".md" : ".html");
+    const editorMode = state.newFileMode?.value || "markdown";
+    const fileExt = editorMode === "richtext" ? ".html" : ".md";
+    const fileType = editorMode === "richtext" ? "html" : "md";
+    const finalFileName = generateUniqueFileName(t, fileExt);
+    const baseName = finalFileName.replace(/\.(md|html)$/i, "");
+
+    // 富文本初始内容（空 HTML）
+    const initialContent = editorMode === "richtext" ? "<p><br></p>" : "";
 
     // 2. 先保存到数据库，提前拿到 ID
     const savedFile = await indexedDBHelper.saveFile({
       name: finalFileName,
-      content: "",
-      type: state.newFileType.value as "md" | "html",
+      content: initialContent,
+      type: fileType,
+      editorMode,
     }, true);
 
     // 构造一个简单的 TreeData 对象
@@ -411,7 +487,8 @@ const createNewFile = async (t: any) => {
       name: finalFileName,
       path: finalFileName,
       type: "file",
-      content: "", // 时光流预览通常不需要全文，可以传空
+      content: "",
+      editorMode,
       updatedAt: Date.now(),
     };
 
@@ -422,30 +499,20 @@ const createNewFile = async (t: any) => {
     state.selectedFile.value = {
       id: savedFile.id,
       name: finalFileName,
-      content: "",
+      content: initialContent,
+      editorMode,
     };
-
-    // --- 【核心修复：切换编辑器类型】 ---
-    // 3.5 根据用户选择的格式，切换对应的编辑器组件
-    state.editorType.value = state.newFileType.value === "md" ? "editormd" : "quill";
-
-    // 强制更新编辑器 ID，确保组件彻底销毁并重建（解决编辑器不刷新的顽疾）
-    state.editorId.value = Date.now();
-
-    // 同步到本地存储，防止刷新后回退
-    localStorage.setItem("editorType", state.editorType.value);
-    // ------------------------------------
 
     // 4. 更新树和 UI
     state.repoTree.value.push({
       name: finalFileName,
       path: finalFileName,
-      content: "",
+      content: initialContent,
       type: "file",
+      editorMode,
     });
 
     state.fileName.value = baseName;
-    localStorage.setItem('fileCounter', (counter + 1).toString());
 
     // 关闭对话框
     state.showNewFileDialog.value = false;
@@ -481,8 +548,8 @@ const exportFile = (format?: string, t?: any) => {
   }
   const name = state.fileName.value || t("compile_view.new_note"); // 使用输入的文件名或默认值
 
-  // 判断是否为HTML内容（富文本编辑器）
-  const isHtmlContent = state.editorType.value === "quill";
+  // 判断是否为HTML内容（基于文件扩展名）
+  const isHtmlContent = state.selectedFile.value.name.endsWith('.html');
 
   // 基本导出选项
   const baseExportOptions: ExportOptions = {
@@ -603,7 +670,7 @@ const saveCurrentFileContent = async (oldName?: string, fileId?: string) => {
         }
       }
 
-      console.log("保存4");
+      // console.log("保存4");
       const savedFile = await indexedDBHelper.saveFile({
         id: fileId,
         name: state.selectedFile.value.name,
@@ -668,7 +735,6 @@ const handleNodeClick = async (data: TreeData) => {
     if (fileFromDB) {
       // 第二步：赋值新数据
       currentState.selectedFile.value = fileFromDB;
-      currentState.editorType.value = data.name.endsWith('.md') ? 'editormd' : 'quill';
       
       // 更新文件名（去掉扩展名）
       const baseName = data.name.replace(/\.md$|\.html$/i, "");
@@ -733,6 +799,7 @@ export {
   autoCreateFirstFile,
   handleContentChange,
   handleDeleteFile,
+  handleRenameFile,
   handleImportFile,
   handleImportSelectedFiles,
   handleExportFile,

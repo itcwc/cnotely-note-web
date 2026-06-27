@@ -1,5 +1,5 @@
 import { ref, computed } from "vue";
-import { SelectedFile, UserInfo, TreeData, RepoData } from "./types";
+import { SelectedFile, UserInfo, TreeData, RepoData, EditorMode } from "./types";
 import RepoAside from "../../components/layout/RepoAside.vue";
 
 // 基本设置
@@ -39,24 +39,24 @@ export const createState = () => {
   const selectedFile = ref<SelectedFile>({ name: "", content: "" });
   const height = "100%";
   const editLanguage = ref<string>(savedLanguage || "en");
+  
+  // 根据当前主题初始化编辑器主题
+  const currentTheme = localStorage.getItem("app-theme") || "light";
+  const isDark = currentTheme === "dark";
+  
   const editorTheme = ref<string>(
-    localStorage.getItem("editorTheme") ?? "default",
+    localStorage.getItem("editorTheme") ?? (isDark ? "dark" : "default"),
   );
   const editorAreaTheme = ref<string>(
-    localStorage.getItem("editorAreaTheme") ?? "default",
+    localStorage.getItem("editorAreaTheme") ?? (isDark ? "pastel-on-dark" : "default"),
   );
   const previewAreaTheme = ref<string>(
-    localStorage.getItem("previewAreaTheme") ?? "default",
+    localStorage.getItem("previewAreaTheme") ?? (isDark ? "dark" : "default"),
   );
-
-  // 编辑器类型
-  const editorType = ref<string>(
-    localStorage.getItem("editorType") || "editormd",
-  ); // 可选值: editormd, quill
 
   // 新建文件相关
   const showNewFileDialog = ref<boolean>(false);
-  const newFileType = ref<string>("md"); // 默认文件类型
+  const newFileMode = ref<EditorMode>("markdown");
   let fileCounter = 1; // 用于生成默认文件名
 
   // 面板大小控制
@@ -100,9 +100,6 @@ export const createState = () => {
   const repoTree = ref<TreeData[]>([]);
   const defaultExpandedKeys = ref<string[]>([]);
 
-  // 编辑器ID
-  const editorId = ref(Date.now());
-
   // 用户菜单引用
   const userMenuRef = ref<any>(null);
 
@@ -121,9 +118,8 @@ export const createState = () => {
     editorTheme,
     editorAreaTheme,
     previewAreaTheme,
-    editorType,
     showNewFileDialog,
-    newFileType,
+    newFileMode,
     fileCounter,
     panel1Size,
     panel2Size,
@@ -139,7 +135,6 @@ export const createState = () => {
     selectedRepo,
     repoTree,
     defaultExpandedKeys,
-    editorId,
     userMenuRef,
     options,
     selectValue,

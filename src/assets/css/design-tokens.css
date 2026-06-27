@@ -1,0 +1,597 @@
+/* ============================================
+   note-app-web Design Tokens v4
+   Unified theme colors for sidebar + editor
+   Three themes: light / dark / sepia (eye-care)
+   ============================================ */
+
+/* ----- Spacing, Radius, Typography (theme-agnostic) ----- */
+:root {
+  --dt-rail-width: 56px;
+  --dt-panel-width: 260px;
+  --dt-toolbar-height: 48px;
+
+  --dt-radius-sm: 6px;
+  --dt-radius-md: 8px;
+  --dt-radius-lg: 12px;
+  --dt-radius-full: 9999px;
+
+  --dt-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --dt-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --dt-text-xs: 11px;
+  --dt-text-sm: 13px;
+  --dt-text-base: 14px;
+  --dt-text-lg: 16px;
+
+  --dt-icon-btn: 36px;
+  --dt-icon-sm: 32px;
+  --dt-icon-xs: 28px;
+}
+
+/* ============================================
+   THEME COLOR VARIABLES
+   ============================================ */
+
+/* ----- 浅色主题 (default) - 冷色调柔和白 ----- */
+:root,
+.theme-light {
+  /* 主背景 - 冷灰调，更柔和 */
+  --dt-bg-app: #F0F4F8;
+  --dt-bg-surface: #FFFFFF;
+  --dt-bg-hover: #E8EDF2;
+  --dt-bg-active: #DDE4EB;
+
+  /* 强调色 - Element Plus 蓝色 */
+  --dt-accent: #409EFF;
+  --dt-accent-hover: #66B1FF;
+  --dt-accent-light: rgba(64, 158, 255, 0.1);
+
+  /* 文字色 */
+  --dt-text-primary: #1E3A5F;
+  --dt-text-secondary: #4A6B8A;
+  --dt-text-muted: #7A94AD;
+
+  /* 边框 */
+  --dt-border: #CBD5E1;
+  --dt-border-light: #E2E8F0;
+
+  /* 按钮 */
+  --dt-btn-bg: #E2E8F0;
+  --dt-btn-hover: #CBD5E1;
+  --dt-btn-icon: #64748B;
+
+  /* 编辑器专用（比侧边栏稍深，形成视觉重心） */
+  /* --dt-editor-bg: #F0F4F8; */
+  --dt-editor-text: #1E3A5F;
+  --dt-editor-line-num-bg: #E6EBF2;
+  --dt-editor-line-num: #8FA3B8;
+
+  /* 代码块 */
+  --dt-code-bg: #1E293B;
+  --dt-code-text: #E2E8F0;
+
+  /* 左侧 Rail 栏（稍暗于面板，形成层次） */
+  --dt-bg-rail: #F4F5F7;
+}
+
+/* ----- 深色主题 - VS Code 深灰色调 ----- */
+.theme-dark {
+  /* 主背景 - VS Code 深灰色系 */
+  --dt-bg-app: #1e1e1e;
+  --dt-bg-surface: #252526;
+  --dt-bg-hover: #2a2d2e;
+  --dt-bg-active: #37373d;
+
+  /* 强调色 - VS Code 蓝 */
+  --dt-accent: #007ACC;
+  --dt-accent-hover: #0098FF;
+  --dt-accent-light: rgba(0, 122, 204, 0.15);
+
+  /* 文字色 */
+  --dt-text-primary: #CCCCCC;
+  --dt-text-secondary: #969696;
+  --dt-text-muted: #6A6A6A;
+
+  /* 边框 */
+  --dt-border: #3C3C3C;
+  --dt-border-light: #2D2D30;
+
+  /* 按钮 */
+  --dt-btn-bg: #2D2D30;
+  --dt-btn-hover: #3E3E42;
+  --dt-btn-icon: #969696;
+
+  /* 编辑器专用（比侧边栏稍深，形成视觉重心） */
+  --dt-editor-bg: #1A1A1A;
+  --dt-editor-text: #D4D4D4;
+  --dt-editor-line-num-bg: #1E1E1E;
+  --dt-editor-line-num: #5A5A5A;
+
+  /* 代码块 */
+  --dt-code-bg: #0F172A;
+  --dt-code-text: #E2E8F0;
+
+  /* 左侧 Rail 栏（稍暗于面板，形成层次） */
+  --dt-bg-rail: #333333;
+}
+
+/* ----- 护眼主题 (Sepia) - 温暖统一色调 ----- */
+.theme-sepia {
+  /* 主背景 - 温暖但不对比过强 */
+  --dt-bg-app: #F5F0E6;
+  --dt-bg-surface: #FAF7F2;
+  --dt-bg-hover: #EDE6D9;
+  --dt-bg-active: #E5DDCC;
+
+  /* 强调色 - 琥珀色 */
+  --dt-accent: #B45309;
+  --dt-accent-hover: #92400E;
+  --dt-accent-light: rgba(180, 83, 9, 0.1);
+
+  /* 文字色 */
+  --dt-text-primary: #4A3728;
+  --dt-text-secondary: #6B5344;
+  --dt-text-muted: #8B7355;
+
+  /* 边框 */
+  --dt-border: #D4C9B8;
+  --dt-border-light: #E8DFD0;
+
+  /* 按钮 */
+  --dt-btn-bg: #EBE3D5;
+  --dt-btn-hover: #DED4C4;
+  --dt-btn-icon: #6B5344;
+
+  /* 编辑器专用（比侧边栏稍深，形成视觉重心） */
+  --dt-editor-bg: #EFE8D8;
+  --dt-editor-text: #4A3728;
+  --dt-editor-line-num-bg: #E8DFCC;
+  --dt-editor-line-num: #A89880;
+
+  /* 代码块 */
+  --dt-code-bg: #4A3728;
+  --dt-code-text: #F5F0E6;
+
+  /* 左侧 Rail 栏（稍暗于面板，形成层次） */
+  --dt-bg-rail: #F2EDE2;
+}
+
+/* ========== Left Rail ========== */
+.left-rail {
+  box-sizing: border-box;
+  background: var(--dt-bg-rail) !important;
+  border-right: 1px solid var(--dt-border) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.rail-inner {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 12px 10px;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.rail-avatar {
+  /* width: var(--dt-icon-btn); */
+  /* height: var(--dt-icon-btn); */
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.rail-btn {
+  width: var(--dt-icon-btn);
+  height: var(--dt-icon-btn);
+  border-radius: var(--dt-radius-sm);
+  border: none;
+  background: var(--dt-btn-bg);
+  color: var(--dt-btn-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+  padding: 0;
+}
+
+.rail-btn:hover {
+  background: var(--dt-btn-hover);
+}
+
+.rail-btn--primary {
+  background: var(--dt-accent);
+  color: #FFFFFF;
+}
+
+.rail-btn--primary:hover {
+  background: var(--dt-accent-hover);
+}
+
+.rail-btn--lang {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dt-text-secondary);
+  line-height: 1;
+}
+
+.rail-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.rail-spacer {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ========== File Panel ========== */
+.file-panel {
+  box-sizing: border-box;
+  background: var(--dt-bg-surface) !important;
+  border-right: 1px solid var(--dt-border) !important;
+  overflow: hidden;
+}
+
+.panel-inner {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 12px;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.panel-search {
+  flex: 1;
+}
+
+.panel-search :deep(.el-input__wrapper) {
+  background: var(--dt-bg-app);
+  border-radius: var(--dt-radius-md);
+  border: none;
+  box-shadow: none;
+  padding: 0 12px;
+  height: 36px;
+}
+
+.panel-search :deep(.el-input__wrapper:hover) {
+  background: var(--dt-bg-hover);
+}
+
+.panel-search :deep(.el-input__wrapper.is-focus) {
+  box-shadow: 0 0 0 1px var(--dt-accent) inset;
+  background: var(--dt-bg-surface);
+}
+
+.panel-search :deep(.el-input__inner) {
+  font-size: var(--dt-text-sm);
+  color: var(--dt-text-primary);
+}
+
+.panel-search :deep(.el-input__inner::placeholder) {
+  color: var(--dt-text-muted);
+}
+
+.panel-search :deep(.el-input__prefix) {
+  color: var(--dt-text-muted);
+}
+
+.panel-divider {
+  height: 1px;
+  background: var(--dt-border);
+  margin: 2px -12px 0 -12px;
+  flex-shrink: 0;
+}
+
+/* File list */
+.file-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.file-group-header {
+  padding: 4px 6px;
+  font-size: var(--dt-text-xs);
+  font-weight: 500;
+  color: var(--dt-text-muted);
+  text-transform: none;
+  letter-spacing: 0;
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--dt-radius-sm);
+  cursor: pointer;
+  font-size: var(--dt-text-sm);
+  color: var(--dt-text-primary);
+  height: 36px;
+  transition: background 0.1s ease;
+}
+
+.file-item:hover {
+  background: var(--dt-bg-hover);
+}
+
+.file-item--active {
+  background: var(--dt-accent-light) !important;
+  color: var(--dt-accent) !important;
+  font-weight: 500;
+}
+
+.file-item-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--dt-text-muted);
+}
+
+.file-item--active .file-item-icon {
+  color: var(--dt-accent);
+}
+
+.file-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Empty state */
+.file-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 16px;
+  font-size: var(--dt-text-sm);
+  color: var(--dt-text-muted);
+  text-align: center;
+}
+
+/* ========== Editor Toolbar ========== */
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  height: var(--dt-toolbar-height);
+  padding: 0 16px;
+  gap: 8px;
+  border-bottom: 1px solid var(--dt-border);
+  background: var(--dt-editor-bg);
+  flex-shrink: 0;
+}
+
+.editor-toolbar .file-name {
+  font-size: var(--dt-text-base);
+  font-weight: 500;
+  color: var(--dt-text-primary);
+  flex: 1;
+  min-width: 0;
+}
+
+.toolbar-btn {
+  width: var(--dt-icon-sm);
+  height: var(--dt-icon-sm);
+  border-radius: var(--dt-radius-sm);
+  border: none;
+  background: var(--dt-btn-bg);
+  color: var(--dt-btn-icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+  padding: 0;
+}
+
+.toolbar-btn:hover {
+  background: var(--dt-btn-hover);
+}
+
+.toolbar-btn--primary {
+  background: var(--dt-accent);
+  color: #FFFFFF;
+}
+
+.toolbar-btn--primary:hover {
+  background: var(--dt-accent-hover);
+}
+
+.toolbar-btn .btn-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ========== Editor Area ========== */
+.editor-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--dt-bg-app);
+}
+
+.editor-area .md-editor {
+  height: 100%;
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ========== App Shell ========== */
+.app-shell {
+  height: 100vh;
+  display: flex;
+  background: var(--dt-bg-app);
+  font-family: var(--dt-font);
+}
+
+/* ========== Element Plus Overrides ========== */
+
+/* Avatar sizing in rail */
+.rail-avatar .el-avatar {
+  width: 32px !important;
+  height: 32px !important;
+  font-size: 13px;
+}
+
+.rail-avatar .el-avatar.default-avatar {
+  background-color: var(--dt-btn-bg);
+  color: var(--dt-btn-icon);
+}
+
+.rail-avatar .el-avatar.default-avatar .el-icon {
+  font-size: 18px;
+}
+
+/* ========== Element Plus Theme Variables ========== */
+
+/* Light theme - default */
+:root,
+.theme-light {
+  --el-color-primary: var(--dt-accent);
+  --el-color-primary-light-3: var(--dt-accent-hover);
+  --el-color-primary-light-5: rgba(64, 158, 255, 0.5);
+  --el-color-primary-light-7: rgba(64, 158, 255, 0.3);
+  --el-color-primary-light-8: rgba(64, 158, 255, 0.2);
+  --el-color-primary-light-9: var(--dt-accent-light);
+  --el-color-primary-dark-2: #337ecc;
+
+  --el-bg-color: var(--dt-bg-surface);
+  --el-bg-color-page: var(--dt-bg-app);
+  --el-bg-color-overlay: var(--dt-bg-surface);
+  --el-fill-color-light: var(--dt-bg-hover);
+  --el-fill-color-lighter: var(--dt-editor-line-num-bg);
+  --el-fill-color-blank: var(--dt-bg-surface);
+
+  --el-text-color-primary: var(--dt-text-primary);
+  --el-text-color-regular: var(--dt-text-secondary);
+  --el-text-color-secondary: var(--dt-text-muted);
+  --el-text-color-placeholder: var(--dt-text-muted);
+  --el-text-color-disabled: var(--dt-text-muted);
+
+  --el-border-color: var(--dt-border);
+  --el-border-color-light: var(--dt-border-light);
+  --el-border-color-lighter: var(--dt-border-light);
+  --el-border-color-extra-light: var(--dt-border-light);
+  --el-border-color-dark: var(--dt-border);
+  --el-border-color-darker: var(--dt-border);
+
+  --el-box-shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+  --el-box-shadow: 0 12px 32px 4px rgba(0, 0, 0, 0.04), 0 8px 20px rgba(0, 0, 0, 0.08);
+  --el-box-shadow-dark: 0 12px 32px 4px rgba(0, 0, 0, 0.08), 0 8px 20px rgba(0, 0, 0, 0.12);
+
+  --el-overlay-color: rgba(0, 0, 0, 0.5);
+  --el-mask-color: rgba(0, 0, 0, 0.5);
+
+  --el-hover-bg-color: var(--dt-bg-hover);
+}
+
+/* Dark theme */
+.theme-dark.dark {
+  --el-color-primary: var(--dt-accent);
+  --el-color-primary-light-3: var(--dt-accent-hover);
+  --el-color-primary-light-5: rgba(0, 122, 204, 0.5);
+  --el-color-primary-light-7: rgba(0, 122, 204, 0.3);
+  --el-color-primary-light-8: rgba(0, 122, 204, 0.2);
+  --el-color-primary-light-9: var(--dt-accent-light);
+  --el-color-primary-dark-2: #0098FF;
+
+  --el-bg-color: var(--dt-bg-surface);
+  --el-bg-color-page: var(--dt-bg-app);
+  --el-bg-color-overlay: var(--dt-bg-surface);
+  --el-fill-color-light: var(--dt-bg-hover);
+  --el-fill-color-lighter: var(--dt-editor-line-num-bg);
+  --el-fill-color-blank: var(--dt-bg-surface);
+
+  --el-text-color-primary: var(--dt-text-primary);
+  --el-text-color-regular: var(--dt-text-secondary);
+  --el-text-color-secondary: var(--dt-text-muted);
+  --el-text-color-placeholder: var(--dt-text-muted);
+  --el-text-color-disabled: var(--dt-text-muted);
+
+  --el-border-color: var(--dt-border);
+  --el-border-color-light: var(--dt-border-light);
+  --el-border-color-lighter: var(--dt-border-light);
+  --el-border-color-extra-light: var(--dt-border-light);
+  --el-border-color-dark: var(--dt-border);
+  --el-border-color-darker: var(--dt-border);
+
+  --el-box-shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
+  --el-box-shadow: 0 12px 32px 4px rgba(0, 0, 0, 0.2), 0 8px 20px rgba(0, 0, 0, 0.3);
+  --el-box-shadow-dark: 0 12px 32px 4px rgba(0, 0, 0, 0.3), 0 8px 20px rgba(0, 0, 0, 0.4);
+
+  --el-overlay-color: rgba(0, 0, 0, 0.7);
+  --el-mask-color: rgba(0, 0, 0, 0.7);
+
+  --el-hover-bg-color: var(--dt-bg-hover);
+}
+
+/* Sepia theme */
+.theme-sepia {
+  --el-color-primary: var(--dt-accent);
+  --el-color-primary-light-3: var(--dt-accent-hover);
+  --el-color-primary-light-5: rgba(180, 83, 9, 0.5);
+  --el-color-primary-light-7: rgba(180, 83, 9, 0.3);
+  --el-color-primary-light-8: rgba(180, 83, 9, 0.2);
+  --el-color-primary-light-9: var(--dt-accent-light);
+  --el-color-primary-dark-2: #92400E;
+
+  --el-bg-color: var(--dt-bg-surface);
+  --el-bg-color-page: var(--dt-bg-app);
+  --el-bg-color-overlay: var(--dt-bg-surface);
+  --el-fill-color-light: var(--dt-bg-hover);
+  --el-fill-color-lighter: var(--dt-editor-line-num-bg);
+  --el-fill-color-blank: var(--dt-bg-surface);
+
+  --el-text-color-primary: var(--dt-text-primary);
+  --el-text-color-regular: var(--dt-text-secondary);
+  --el-text-color-secondary: var(--dt-text-muted);
+  --el-text-color-placeholder: var(--dt-text-muted);
+  --el-text-color-disabled: var(--dt-text-muted);
+
+  --el-border-color: var(--dt-border);
+  --el-border-color-light: var(--dt-border-light);
+  --el-border-color-lighter: var(--dt-border-light);
+  --el-border-color-extra-light: var(--dt-border-light);
+  --el-border-color-dark: var(--dt-border);
+  --el-border-color-darker: var(--dt-border);
+
+  --el-box-shadow-light: 0 2px 12px 0 rgba(74, 55, 40, 0.08);
+  --el-box-shadow: 0 12px 32px 4px rgba(74, 55, 40, 0.04), 0 8px 20px rgba(74, 55, 40, 0.08);
+  --el-box-shadow-dark: 0 12px 32px 4px rgba(74, 55, 40, 0.08), 0 8px 20px rgba(74, 55, 40, 0.12);
+
+  --el-overlay-color: rgba(74, 55, 40, 0.5);
+  --el-mask-color: rgba(74, 55, 40, 0.5);
+
+  --el-hover-bg-color: var(--dt-bg-hover);
+}

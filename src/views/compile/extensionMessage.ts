@@ -6,9 +6,7 @@ import { ref } from "vue";
 // 定义状态类型
 interface State {
   selectedFile: any;
-  editorType: any;
   fileName: any;
-  editorId: any;
 }
 
 // 状态对象，将在 Compile.vue 中设置
@@ -33,7 +31,6 @@ const processSyncData = async (data: any) => {
   // 将插件的 'rich-text' 映射为 Web 的 'html'，'markdown' 映射为 'md'
   const isRichText = pluginEditorType === "rich-text" || pluginEditorType === "html";
   const targetType = isRichText ? "html" : "md";
-  const targetEditor = isRichText ? "quill" : "editormd";
   // ----------------------------
 
   const ext = `.${targetType}`;
@@ -52,7 +49,7 @@ const processSyncData = async (data: any) => {
   }
 
   // 2. 执行数据库保存
-  console.log(`同步中: 识别为 ${targetEditor} 模式`);
+  console.log(`同步中: 类型为 ${targetType}`);
   const result = await indexedDBHelper.saveFile(fileRecord);
 
   if (result.content === undefined || result.content === null) {
@@ -63,12 +60,6 @@ const processSyncData = async (data: any) => {
     ...result, // 展开所有属性，包含 id, name, content, type
   };
 
-  // 3. 【核心修复】同步 Web 端的状态机
-  // 必须更新 state 里的这几个响应式变量，UI 才会切换
-  if (state.editorType) {
-    state.editorType.value = targetEditor;
-  }
-
   if (state.selectedFile) {
     state.selectedFile.value = result; // 包含新内容和 ID
   }
@@ -78,12 +69,7 @@ const processSyncData = async (data: any) => {
     state.fileName.value = rawName.replace(/\.(md|html)$/, "");
   }
 
-  // 4. 【强制刷新】触发编辑器组件销毁并重建，确保内容渲染正确
-  if (state.editorId) {
-    state.editorId.value = Date.now();
-  }
-
-  // 5. 刷新时光流显示
+  // 3. 刷新时光流显示
   await refreshFiles();
 
   return result.id;
