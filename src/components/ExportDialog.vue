@@ -3,6 +3,7 @@
     v-model="localVisible"
     :title="t('compile_view.export')"
     width="400px"
+    class="unified-choice-dialog"
   >
     <el-form label-position="top">
       <el-form-item :label="t('compile_view.select_export_format')">
