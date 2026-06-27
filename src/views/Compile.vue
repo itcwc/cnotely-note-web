@@ -483,16 +483,15 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 16px;
   padding: 16px;
-  border: 2px solid var(--dt-border);
+  border: 1px solid #e0e0e0;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
-  background: var(--dt-bg-surface);
+  background: #fff;
 }
 
 .type-card:hover {
-  border-color: var(--dt-accent);
-  background: var(--dt-bg-hover);
+  border-color: #c0c0c0;
 }
 
 .type-card.active {
@@ -508,16 +507,15 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  background: #f5f5f5;
 }
 
 .md-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: #444;
 }
 
 .rt-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
+  color: #444;
 }
 
 .type-info {
