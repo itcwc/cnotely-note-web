@@ -524,14 +524,14 @@ onBeforeUnmount(() => {
 }
 
 .type-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--dt-text-primary);
   margin-bottom: 4px;
 }
 
 .type-desc {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--dt-text-secondary);
   line-height: 1.4;
 }
