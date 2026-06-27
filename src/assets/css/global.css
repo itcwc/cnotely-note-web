@@ -11,17 +11,28 @@
     gap: 8px;
     width: 100%;
     padding: 10px 16px;
-    border: 1px solid var(--dt-border);
     border-radius: 8px;
-    background: var(--dt-bg-surface);
-    color: var(--dt-text-primary);
     font-size: 14px;
     cursor: pointer;
     transition: all .2s;
 }
-.choice-btn:hover {
-    border-color: var(--dt-accent);
-    background: var(--dt-bg-hover);
+/* 纯黑风格（GitHub 导入） */
+.choice-btn-dark {
+    border: 1px solid #30363d;
+    background: #1a1a1a;
+    color: #fff;
+}
+.choice-btn-dark:hover {
+    opacity: .85;
+}
+/* 白底风格（Google 导入） */
+.choice-btn-light {
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    color: #333;
+}
+.choice-btn-light:hover {
+    border-color: #c0c0c0;
 }
 
 /* ===== 统一选择弹窗样式（新建文件 / 选择导入方式 / 授权） ===== */
