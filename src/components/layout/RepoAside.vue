@@ -136,56 +136,21 @@
       v-model="showImportDialog"
       :title="t('compile_view.select_import_method')"
       width="400px"
+      class="unified-choice-dialog"
     >
-      <div style="margin-top: 20px">
-        <el-button
-          type="primary"
-          size="large"
-          style="width: 100%; margin-bottom: 12px"
-          @click="handleLocalImport"
-          plain
-        >
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="choice-btn" @click="handleLocalImport">
           <el-icon><Upload /></el-icon>
           {{ t("compile_view.local_import") }}
-        </el-button>
-        <el-button
-          size="large"
-          style="width: 100%; margin-bottom: 12px; margin-left: 0px"
-          @click="handleGoogleDriveImport"
-          type="success"
-          plain
-        >
-          <img
-            src="/imgs/icon/google_drive.png"
-            alt="Google Drive"
-            style="
-              width: 18px;
-              height: 18px;
-              margin-right: 8px;
-              vertical-align: middle;
-            "
-          />
+        </button>
+        <button class="choice-btn" @click="handleGoogleDriveImport">
+          <img src="/imgs/icon/google_drive.png" alt="Google Drive" style="width:18px;height:18px;" />
           {{ t("compile_view.google_drive_import") }}
-        </el-button>
-        <el-button
-          size="large"
-          style="width: 100%; margin-left: 0px"
-          @click="openRepoDialogLocal"
-          type="success"
-          plain
-        >
-          <img
-            src="/imgs/icon/github_favicon.svg"
-            alt="GitHub"
-            style="
-              width: 18px;
-              height: 18px;
-              margin-right: 8px;
-              vertical-align: middle;
-            "
-          />
+        </button>
+        <button class="choice-btn" @click="openRepoDialogLocal">
+          <img src="/imgs/icon/github_favicon.svg" alt="GitHub" style="width:18px;height:18px;" />
           {{ t("compile_view.github_import") }}
-        </el-button>
+        </button>
       </div>
       <template #footer>
         <span class="dialog-footer">
