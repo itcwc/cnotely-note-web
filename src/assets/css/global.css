@@ -35,6 +35,28 @@
     border-color: #c0c0c0;
 }
 
+/* 导入弹窗授权状态徽章 */
+.status-badge {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+.status-connected {
+    background: rgba(52, 168, 83, 0.12);
+    color: #34a853;
+}
+.status-disconnected {
+    background: rgba(154, 160, 166, 0.12);
+    color: #9aa0a6;
+}
+.status-none {
+    background: rgba(154, 160, 166, 0.08);
+    color: #9aa0a6;
+}
+
 /* ===== 统一选择弹窗样式（新建文件 / 选择导入方式 / 授权） ===== */
 .unified-choice-dialog {
     border-radius: 16px !important;
