@@ -69,7 +69,7 @@ async function findOrCreateSyncFolder(): Promise<string> {
   const data: any = await gdFetch<any>(`/files?q=${q}&fields=files(id,name)&pageSize=1`);
 
   if (data.files?.[0]?.id) {
-    syncFolderId = data.files[0].id;
+    syncFolderId = data.files[0].id as string;
     console.log(`[Google Drive] 找到已存在的文件夹: ${SYNC_FOLDER_NAME} (${syncFolderId})`);
     return syncFolderId;
   }
@@ -87,7 +87,7 @@ async function findOrCreateSyncFolder(): Promise<string> {
     }),
   });
 
-  syncFolderId = createData.id;
+  syncFolderId = createData.id as string;
   console.log(`[Google Drive] 文件夹已创建: ${SYNC_FOLDER_NAME} (${syncFolderId})`);
   return syncFolderId;
 }
