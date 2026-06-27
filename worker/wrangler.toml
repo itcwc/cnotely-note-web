@@ -1,0 +1,11 @@
+name = "cnotely-github-oauth"
+main = "github-oauth-worker.js"
+compatibility_date = "2024-09-01"
+
+# 部署后 Worker 的 URL 格式：https://cnotely-github-oauth.<你的子域>.workers.dev
+# 前端通过 VITE_GITHUB_TOKEN_PROXY_URL 环境变量指向这个 URL
+
+# client_secret 不要写在这里！
+# 用 wrangler secret put GITHUB_CLIENT_SECRET 设置
+[vars]
+# 这里可以放非敏感变量，目前不需要

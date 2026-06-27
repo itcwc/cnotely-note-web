@@ -3,24 +3,26 @@
 // 定义文件类型
 export type FileType = "md" | "html";
 
+export type EditorMode = "markdown" | "richtext";
+
 // 定义文件对象接口
 export interface StoredFile {
-  id?: string; // 唯一标识符
-  name: string; // 文件名
-  content: string; // 文件内容
-  type: FileType; // 文件类型
-  createdAt: number; // 创建时间
-  updatedAt: number; // 更新时间
-  // 仓库相关信息（云端导入时使用）
-  repo?: string; // 仓库名称（格式：owner/repo）
-  path?: string; // 文件路径
-  branch?: string; // 分支名称
-  sha?: string; // 文件的 SHA 值
+  id?: string;
+  name: string;
+  content: string;
+  type: FileType;
+  editorMode?: EditorMode;
+  createdAt: number;
+  updatedAt: number;
+  repo?: string;
+  path?: string;
+  branch?: string;
+  sha?: string;
 }
 
 // 数据库名称和版本
 const DB_NAME = "cnotely-db";
-const DB_VERSION = 4;
+const DB_VERSION = 5;
 const STORE_NAME = "files";
 
 // IndexedDB 工具类
@@ -118,6 +120,7 @@ class IndexedDBHelper {
         const fileToSave: any = {
           ...file,
           name: fileName,
+          editorMode: file.editorMode || existing?.editorMode || "markdown",
           createdAt: existing?.createdAt || now,
           updatedAt: now,
         };
@@ -386,6 +389,52 @@ class IndexedDBHelper {
       } else {
         // 如果索引不存在，直接返回
         resolve();
+      }
+    });
+  }
+
+  async renameFile(oldName: string, newName: string): Promise<void> {
+    await this.init();
+    if (!this.db) throw new Error("Database not initialized");
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(STORE_NAME, "readwrite");
+      const store = transaction.objectStore(STORE_NAME);
+
+      if (store.indexNames.contains("byName")) {
+        try {
+          const index = store.index("byName");
+          const request = index.openCursor(oldName);
+
+          request.onsuccess = () => {
+            const cursor = request.result;
+
+            if (cursor) {
+              const file = cursor.value as StoredFile;
+              file.name = newName;
+              file.updatedAt = Date.now();
+              const updateRequest = cursor.update(file);
+
+              updateRequest.onsuccess = () => {
+                cursor.continue();
+              };
+
+              updateRequest.onerror = (event) => {
+                reject((event.target as IDBRequest).error);
+              };
+            } else {
+              resolve();
+            }
+          };
+
+          request.onerror = (event) => {
+            reject((event.target as IDBRequest).error);
+          };
+        } catch (error) {
+          reject(error);
+        }
+      } else {
+          resolve();
       }
     });
   }

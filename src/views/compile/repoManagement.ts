@@ -26,11 +26,28 @@ export const setRepoState = (s: State, i18n: any, r: any) => {
   router = r;
 };
 
+// 自动检测当前已授权的平台（不依赖 selectedPlatform）
+const detectPlatform = (): string | null => {
+  // 读 localStorage 里的 user_info（OAuth 登录后写入）
+  try {
+    const raw = localStorage.getItem("user_info");
+    if (raw) {
+      const info = JSON.parse(raw);
+      if (info?.provider) return info.provider;
+    }
+  } catch {}
+  // 降级：看 selectedPlatform 是否有值
+  if (state?.selectedPlatform?.value) {
+    return state.selectedPlatform.value;
+  }
+  return null;
+};
+
 // 切换平台函数
 const togglePlatform = () => {
   if (!t) return;
-  
-  // 提示用户并跳转到个人中心的账号设置页面
+
+  // 提示用户并跳转到设置页
   ElMessage({
     message: t("compile_view.redirecting_to_profile"),
     type: "success",
@@ -40,10 +57,7 @@ const togglePlatform = () => {
 
   // 延迟一小段时间后跳转，让用户能看到提示信息
   setTimeout(() => {
-    router.push({
-      path: "/profile/account",
-      query: { fromPlatformSwitch: "true" },
-    });
+    router.push("/settings");
   }, 1000);
 };
 
@@ -81,23 +95,22 @@ const setDefaultExpandedNodes = () => {
 // 打开仓库选择对话框
 const openRepoDialog = async () => {
   if (!state || !t) return;
-  
-  if (!state.selectedPlatform.value) {
-    ElMessage.warning(t("compile_view.please_select_platform"));
+
+  // 自动检测平台，不强制要求 selectedPlatform
+  const platform = state.selectedPlatform.value || detectPlatform();
+  if (!platform) {
+    ElMessage.warning(t("compile_view.please_login_first") || "请先登录");
     return;
   }
 
   try {
-    // 根据选择的平台调用对应的 API
-    if (state.selectedPlatform.value === "github") {
-      // 调用 github API 获取仓库列表
+    if (platform === "github") {
       state.repos.value = await githubApi.repos.getUserRepos();
     }
   } catch (error) {
     console.error("获取仓库列表失败:", error);
     ElMessage.error(t("compile_view.get_repo_list_failure"));
   } finally {
-    // 通知仓库面板仓库列表加载完成
     state.repoAsideRef.value?.handleRepoLoaded();
   }
 };
@@ -114,10 +127,11 @@ const selectRepo = async (repo: RepoData) => {
 const getRepoTree = async (repoName: string) => {
   if (!state || !t) return;
   
+  const platform = state.selectedPlatform.value || detectPlatform();
+  if (!platform) return;
+
   try {
-    // 根据选择的平台调用对应的 API
-    if (state.selectedPlatform.value === "github") {
-      // 调用 github API 获取仓库文件树
+    if (platform === "github") {
       let tree = await githubApi.repos.getRepoTree(repoName);
 
       // 只使用仓库文件，不合并本地文件

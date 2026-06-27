@@ -1,4 +1,6 @@
 // 定义类型
+export type EditorMode = "markdown" | "richtext";
+
 export interface TreeData {
   id?: string;
   name: string;
@@ -7,9 +9,10 @@ export interface TreeData {
   content?: string;
   full_name?: string;
   children?: TreeData[];
+  editorMode?: EditorMode;
 
-  createdAt?: number; // 创建时间
-  updatedAt?: number; // 更新时间
+  createdAt?: number;
+  updatedAt?: number;
 }
 
 export interface RepoData {
@@ -30,6 +33,7 @@ export interface SelectedFile {
   path?: string;
   updatedAt?: number | string;
   id?: string;
+  editorMode?: EditorMode;
 }
 
 export interface UserInfo {

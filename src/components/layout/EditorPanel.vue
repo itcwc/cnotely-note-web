@@ -1,16 +1,26 @@
 <template>
-  <el-container>
+  <el-container :class="themeClass">
     <el-header
       height="59px"
-      style="display: flex; align-items: center; gap: 16px"
+      style="display: flex; align-items: center; gap: 12px"
     >
-      <el-icon class="notebook-icon">
-        <Notebook />
-      </el-icon>
-      <EditableText
-        v-model="localFileName"
-        :placeholder="t('compile_view.file_name_placeholder')"
-      />
+      <div class="file-name-editor" @click="handleEditFileName">
+        <svg v-if="isRichTextMode" class="file-icon" width="18" height="18" viewBox="0 0 256 256" fill="none">
+          <path fill="currentColor" d="M48 128a12 12 0 0 0 12-12V44h76v48a12 12 0 0 0 12 12h48v12a12 12 0 0 0 24 0V88a12 12 0 0 0-3.51-8.49l-56-56A12 12 0 0 0 152 20H56a20 20 0 0 0-20 20v76a12 12 0 0 0 12 12m135-48h-23V57ZM68 160v48a12 12 0 0 1-24 0v-12H32v12a12 12 0 0 1-24 0v-48a12 12 0 0 1 24 0v12h12v-12a12 12 0 0 1 24 0m60 0a12 12 0 0 1-12 12h-4v36a12 12 0 0 1-24 0v-36h-4a12 12 0 0 1 0-24h32a12 12 0 0 1 12 12m72 0v48a12 12 0 0 1-24 0v-9.36l-.11.16a12 12 0 0 1-19.78 0l-.11-.16V208a12 12 0 0 1-24 0v-48a12 12 0 0 1 21.89-6.8L166 170.82l12.11-17.62A12 12 0 0 1 200 160m56 48a12 12 0 0 1-12 12h-24a12 12 0 0 1-12-12v-48a12 12 0 0 1 24 0v36h12a12 12 0 0 1 12 12"/>
+        </svg>
+        <svg v-else class="file-icon" width="18" height="18" viewBox="0 0 256 256" fill="none">
+          <path fill="currentColor" d="M100 152v56a12 12 0 0 1-24 0v-17.93l-6.17 8.81a12 12 0 0 1-19.66 0L44 190.07V208a12 12 0 0 1-24 0v-56a12 12 0 0 1 21.83-6.88L60 171.07l18.17-25.95A12 12 0 0 1 100 152m84 28a40 40 0 0 1-40 40h-16a12 12 0 0 1-12-12v-56a12 12 0 0 1 12-12h16a40 40 0 0 1 40 40m-24 0a16 16 0 0 0-16-16h-4v32h4a16 16 0 0 0 16-16m60-92v136a12 12 0 0 1-24 0V104h-48a12 12 0 0 1-12-12V44H60v64a12 12 0 0 1-24 0V40a20 20 0 0 1 20-20h96a12 12 0 0 1 8.49 3.52l56 56A12 12 0 0 1 220 88m-60-8h23l-23-23Z"/>
+        </svg>
+        <EditableText
+          ref="editableTextRef"
+          v-model="localFileName"
+          :placeholder="t('compile_view.file_name_placeholder')"
+        />
+        <svg class="edit-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+          <path d="m15 5 4 4"/>
+        </svg>
+      </div>
 
       <!-- 右侧工具栏 -->
       <div
@@ -25,70 +35,58 @@
         <!-- 新建文件按钮 -->
         <el-tooltip :content="t('compile_view.new_file')" placement="top">
           <el-button
-            type="primary"
-            :icon="Plus"
+            class="toolbar-btn toolbar-btn--primary"
             @click="emit('openNewFileDialog')"
-            plain
           >
-            <span class="btn-text">{{ t("compile_view.new_file") }}</span>
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <path d="M10 4V16M4 10H16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            </svg>
           </el-button>
         </el-tooltip>
 
         <!-- 导入文件按钮 -->
         <el-tooltip :content="t('compile_view.import_file')" placement="top">
           <el-button
-            type="primary"
+            class="toolbar-btn"
             :icon="Upload"
             @click="showImportDialog = true"
-            plain
-          >
-            <span class="btn-text">{{ t("compile_view.import_file") }}</span>
-          </el-button>
+          />
         </el-tooltip>
 
         <!-- 导出按钮 -->
         <el-tooltip :content="t('compile_view.export')" placement="top">
           <el-button
-            class="export-btn"
-            type="primary"
-            @click="openExportDialog"
+            class="toolbar-btn"
             :icon="Download"
-            plain
-          >
-            <span class="btn-text">{{ t("compile_view.export") }}</span>
-          </el-button>
+            @click="openExportDialog"
+          />
         </el-tooltip>
 
         <!-- 保存到云按钮 -->
         <el-tooltip :content="t('compile_view.save_to_cloud')" placement="top">
           <el-button
-            class="save-to-cloud"
+            class="toolbar-btn"
             type="success"
-            @click="saveCloud"
             :icon="UploadFilled"
+            @click="saveCloud"
             :loading="isSavingToCloud"
             :disabled="isSavingToCloud"
-          >
-            <span class="btn-text">{{ t("compile_view.save_to_cloud") }}</span>
-          </el-button>
+          />
         </el-tooltip>
 
-        <!-- 默认存储提供者标签 -->
-        <el-text v-if="userInfo && userInfo.default_storage_provider">{{
-          t("compile_view.current_default")
-        }}</el-text>
+        <!-- 存储提供者标签 -->
         <el-tag
           v-if="userInfo && userInfo.default_storage_provider"
           :type="
             userInfo.default_storage_provider === 'github' ? 'info' : 'success'
           "
           size="small"
-          effect="light"
+          effect="plain"
         >
           {{
             userInfo.default_storage_provider === "github"
-              ? t("compile_view.github")
-              : t("compile_view.google_drive")
+              ? "GitHub"
+              : "Google Drive"
           }}
         </el-tag>
       </div>
@@ -108,7 +106,6 @@
             size="large"
             style="width: 100%; margin-bottom: 12px"
             @click="handleLocalImport"
-            plain
           >
             <el-icon><Upload /></el-icon>
             {{ t("compile_view.local_import") }}
@@ -118,7 +115,6 @@
             style="width: 100%; margin-bottom: 12px; margin-left: 0px"
             @click="handleGoogleDriveImport"
             type="success"
-            plain
           >
             <img
               src="/imgs/icon/google_drive.png"
@@ -137,7 +133,6 @@
             style="width: 100%; margin-left: 0px"
             @click="openRepoDialogLocal"
             type="success"
-            plain
           >
             <img
               src="/imgs/icon/github_favicon.svg"
@@ -220,10 +215,16 @@
           </span>
         </template>
       </el-dialog>
+      <!-- 根据 editorMode 选择编辑器 -->
       <div class="md-editor">
-        <Editormd
-          :key="editorId"
-          v-if="localEditorType === 'editormd'"
+        <RichTextEditor
+          v-if="isRichTextMode"
+          v-model="selectedFile.content"
+          :height="height"
+          @contentChange="handleRichTextChange"
+        />
+        <MarkdownEditor
+          v-else-if="isMarkdownFile"
           v-model="selectedFile.content"
           :height="height"
           :width="editorPanelSize"
@@ -232,7 +233,7 @@
           :editorAreaTheme="editorAreaTheme"
           :previewAreaTheme="previewAreaTheme"
         />
-        <QuillEditor
+        <PlainTextEditor
           v-else
           v-model="selectedFile.content"
           :height="height"
@@ -259,19 +260,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import { ElMessage, ElMessageBox, ElLoading } from "element-plus";
-import Editormd from "../Editormd.vue";
-import QuillEditor from "../QuillEditor.vue";
+import MarkdownEditor from "../MarkdownEditor.vue";
+import PlainTextEditor from "../PlainTextEditor.vue";
+import RichTextEditor from "../RichTextEditor.vue";
 import EditableText from "../EditableText.vue";
 import ExportDialog from "../ExportDialog.vue";
 import {
-  Notebook,
-  QuestionFilled,
   Download,
   UploadFilled,
-  Plus,
   Upload,
   Loading,
 } from "@element-plus/icons-vue";
@@ -324,14 +323,9 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  editorType: {
-    type: String,
-    default: "editormd",
-  },
 });
 
 const emit = defineEmits([
-  "switchEditorType",
   "exportFile",
   "saveCloud",
   "update:fileName",
@@ -342,6 +336,40 @@ const emit = defineEmits([
 ]);
 
 const { t, locale } = useI18n();
+
+// 响应式主题状态
+const currentTheme = ref('light')
+
+// 根据主题设置动态类名
+const themeClass = computed(() => `theme-${currentTheme.value}`)
+
+// 更新主题函数
+const updateTheme = () => {
+  if (document.documentElement.classList.contains('theme-dark')) {
+    currentTheme.value = 'dark'
+  } else if (document.documentElement.classList.contains('theme-sepia')) {
+    currentTheme.value = 'sepia'
+  } else {
+    currentTheme.value = 'light'
+  }
+}
+
+// 判断是否为 Markdown 文件
+const isMarkdownFile = computed(() => {
+  if (!props.selectedFile?.name) return true;
+  return props.selectedFile.name.endsWith('.md');
+});
+
+// 判断是否为富文本模式（兼容 editorMode 字段和 .html 后缀两种判断方式）
+const isRichTextMode = computed(() => {
+  if (props.selectedFile?.editorMode === 'richtext') return true;
+  if (props.selectedFile?.name?.endsWith('.html')) return true;
+  return false;
+});
+
+const handleRichTextChange = (html: string) => {
+  emit("contentChange", { ...props.selectedFile, content: html });
+};
 
 // 本地文件名状态，用于EditableText组件的v-model
 // const localFileName = ref(props.fileName);
@@ -375,26 +403,6 @@ watch(
   },
 );
 
-// EditorPanel.vue 的 <script setup> 中
-const editorId = ref(Date.now());
-
-// 监听从最外层传进来的 selectedFile
-watch(
-  () => props.selectedFile.name, // 监听文件名，或者监听整个对象
-  (newVal, oldVal) => {
-    if (newVal !== oldVal) {
-      // 文件名变了，说明切换了文件，更新 ID 触发 Editormd 销毁重装
-      editorId.value = Date.now();
-      // console.log("检测到文件切换，重置编辑器 ID");
-    }
-  },
-);
-
-// 编辑器类型从props获取，使用本地ref来处理v-model绑定
-const localEditorType = defineModel<string>("editorType", {
-  default: "editormd",
-});
-
 // 导出选项
 const options = [
   { value: "md", label: "compile_view.export_md" },
@@ -419,6 +427,13 @@ const googleDriveError = ref<string>("");
 // 云存储保存状态
 const isSavingToCloud = ref(false);
 
+// 文件名编辑 ref
+const editableTextRef = ref<any>(null);
+
+const handleEditFileName = () => {
+  editableTextRef.value?.startEdit();
+};
+
 const getOptionLabel = (item: { value: string; label: string }) =>
   t(item.label);
 
@@ -435,22 +450,6 @@ const handleExportConfirm = (format: string) => {
 // 处理导出取消
 const handleExportCancel = () => {
   // 对话框关闭由ExportDialog组件内部处理
-};
-
-// 切换编辑器类型
-const switchEditorType = (type: string) => {
-  localStorage.setItem("editorType", type);
-  emit("switchEditorType", type);
-  ElMessage({
-    message: t("compile_view.switched_to_editor", {
-      editor:
-        type === "editormd"
-          ? t("compile_view.markdown")
-          : t("compile_view.rich_text"),
-    }),
-    type: "success",
-    duration: 1500,
-  });
 };
 
 // 处理本地导入
@@ -611,8 +610,8 @@ const exportFile = async () => {
   }
   const name = props.fileName || t("compile_view.new_note"); // 使用输入的文件名或默认值
 
-  // 判断是否为HTML内容（富文本编辑器）
-  const isHtmlContent = localEditorType.value === "quill";
+  // 判断是否为HTML内容（根据文件扩展名）
+  const isHtmlContent = props.selectedFile.name.endsWith('.html');
 
   // 基本导出选项
   const baseExportOptions: ExportOptions = {
@@ -668,10 +667,17 @@ const saveCloud = async () => {
   
   try {
     isSavingToCloud.value = true;
+    // 根据文件名的后缀判断类型，而不是 selectedFile.name（两者可能不同步）
+    const fileType = props.fileName.endsWith('.html') ? 'html' : 'md';
+    // 确保文件名有正确的后缀（防止无后缀文件被错误分类）
+    let saveFileName = props.fileName;
+    if (!saveFileName.includes('.')) {
+      saveFileName += fileType === 'md' ? '.md' : '.html';
+    }
     const success = await saveToCloud(
-      props.fileName,
+      saveFileName,
       props.selectedFile.content,
-      localEditorType.value,
+      fileType,
     );
 
     // if (success) {
@@ -681,6 +687,20 @@ const saveCloud = async () => {
     isSavingToCloud.value = false;
   }
 };
+
+// 生命周期
+onMounted(() => {
+  // 初始化主题
+  updateTheme()
+  
+  // 监听主题变化事件
+  window.addEventListener('theme-changed', updateTheme)
+})
+
+onUnmounted(() => {
+  // 清理监听器
+  window.removeEventListener('theme-changed', updateTheme)
+})
 
 // 监听fileName变化
 watch(
@@ -692,10 +712,104 @@ watch(
 </script>
 
 <style scoped>
+/* Header 主题样式 - 使用 CSS 变量统一色调 */
+:deep(.el-header) {
+  background: var(--dt-bg-surface);
+  border-bottom: 1px solid var(--dt-border);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+/* File Name Editor - 文件名编辑区域 */
+.file-name-editor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  /* background: var(--dt-bg-hover); */
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-name-editor:hover {
+  background: var(--dt-bg-active);
+  border-color: var(--dt-border);
+}
+
+.file-name-editor:hover .edit-icon {
+  opacity: 1;
+}
+
+.file-icon {
+  color: var(--dt-text-secondary);
+  flex-shrink: 0;
+}
+
+.edit-icon {
+  color: var(--dt-text-muted);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* 暗色主题 */
+.theme-dark :deep(.el-header) .el-button:not(.toolbar-btn--primary) {
+  background: var(--dt-btn-bg);
+  color: var(--dt-btn-icon);
+  border-color: var(--dt-border);
+}
+
+.theme-dark :deep(.el-header) .el-button:not(.toolbar-btn--primary):hover {
+  background: var(--dt-btn-hover);
+  color: var(--dt-accent);
+}
+
+.theme-dark :deep(.el-header) .el-tag {
+  background: var(--dt-btn-bg);
+  border-color: var(--dt-border);
+  color: var(--dt-text-secondary);
+}
+
+/* 米色护眼主题 */
+.theme-sepia :deep(.el-header) .el-button:not(.toolbar-btn--primary) {
+  background: var(--dt-btn-bg);
+  color: var(--dt-btn-icon);
+  border-color: var(--dt-border);
+}
+
+.theme-sepia :deep(.el-header) .el-button:not(.toolbar-btn--primary):hover {
+  background: var(--dt-btn-hover);
+  color: var(--dt-accent);
+}
+
+.theme-sepia :deep(.el-header) .el-tag {
+  background: var(--dt-btn-bg);
+  border-color: var(--dt-border);
+  color: var(--dt-text-secondary);
+}
+
+/* 浅色主题 */
+.theme-light :deep(.el-header) .el-button:not(.toolbar-btn--primary) {
+  background: var(--dt-btn-bg);
+  color: var(--dt-btn-icon);
+  border-color: var(--dt-border);
+}
+
+.theme-light :deep(.el-header) .el-button:not(.toolbar-btn--primary):hover {
+  background: var(--dt-btn-hover);
+  color: var(--dt-accent);
+}
+
+.theme-light :deep(.el-header) .el-tag {
+  background: var(--dt-btn-bg);
+  border-color: var(--dt-border);
+  color: var(--dt-text-secondary);
+}
+
 .md-editor {
   height: 100%;
   position: relative;
-  /* z-index: 1001; */
   flex: 1;
   overflow: hidden;
 }
@@ -738,29 +852,32 @@ watch(
   display: flex;
   align-items: center;
   font-size: 22px;
-  color: #303133;
+  color: var(--dt-text-primary);
   max-width: 100%;
   overflow: hidden;
 }
 
 .notebook-icon {
-  color: #409eff;
+  color: var(--dt-accent);
   font-size: 22px;
   flex-shrink: 0;
   margin-right: 8px;
 }
 
-/* 默认只显示文字，不显示图标 */
-.markdown-guide-icon {
-  display: none;
-  font-size: 20px;
-  margin: 0 0 0 10px;
-  vertical-align: middle;
+.toolbar-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  padding: 0;
 }
 
-.btn-icon {
-  display: none;
-  font-size: 16px;
-  vertical-align: middle;
+.toolbar-btn--primary {
+  background: var(--dt-accent);
+  border-color: var(--dt-accent);
+}
+
+.toolbar-btn--primary:hover {
+  background: var(--dt-accent-hover);
+  border-color: var(--dt-accent-hover);
 }
 </style>

@@ -45,11 +45,12 @@ const sortFilesByTime = async (newFile?: TreeData) => {
       const localFiles = await indexedDBHelper.getAllFiles();
 
       const allFiles: TreeData[] = localFiles.map((file) => ({
-        id: file.id, // 别忘了 ID，这是 Vue key 的核心
+        id: file.id,
         name: file.name,
         path: file.path || file.name,
         type: "file",
         content: file.content,
+        editorMode: file.editorMode,
         createdAt: file.createdAt,
         updatedAt: file.updatedAt,
       }));

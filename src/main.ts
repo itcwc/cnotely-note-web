@@ -9,11 +9,15 @@ import zhCN from "./locales/zh-CN.json";
 
 import 'element-plus/dist/index.css'
 import './assets/css/global.css';
+import './assets/css/design-tokens.css';
 import 'element-plus/theme-chalk/dark/css-vars.css';
 
 // 初始化主题
-const isDarkTheme = localStorage.getItem("theme") === "dark";
-document.documentElement.classList.toggle("dark", isDarkTheme);
+const savedTheme = localStorage.getItem('app-theme') || 'light';
+document.documentElement.classList.add(`theme-${savedTheme}`);
+if (savedTheme === 'dark') {
+  document.documentElement.classList.add('dark');
+}
 
 const app = createApp(App);
 // 创建 i18n 实例

@@ -23,7 +23,46 @@
       "back_to_edit_page": "Back to Edit Page"
     }
   },
+  "editor": {
+    "toolbar": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "strikethrough": "Strikethrough",
+      "h1": "Heading 1",
+      "h2": "Heading 2",
+      "h3": "Heading 3",
+      "ul": "Bullet List",
+      "ol": "Ordered List",
+      "link": "Link",
+      "image": "Image",
+      "code": "Code Block"
+    },
+    "shortcuts": {
+      "save": "Ctrl+S Save",
+      "bold": "Ctrl+B Bold",
+      "italic": "Ctrl+I Italic",
+      "tab": "Tab Indent"
+    },
+    "stats": {
+      "chars": "Characters",
+      "lines": "Lines"
+    },
+    "placeholders": {
+      "bold": "bold text",
+      "italic": "italic text",
+      "strikethrough": "strikethrough text",
+      "h1": "Heading 1",
+      "h2": "Heading 2",
+      "h3": "Heading 3",
+      "listItem": "List item",
+      "linkText": "link text",
+      "url": "URL",
+      "imageAlt": "image description",
+      "codeBlock": "code block"
+    }
+  },
   "settings_view": {
+    "settings": "Settings",
     "title": "System Settings",
     "basic_settings": "Basic Settings",
     "editor_settings": "Markdown Editor Settings",
@@ -39,19 +78,41 @@
     "choose_editor_theme": "Choose Editor Theme",
     "choose_edit_area_theme": "Choose Edit Area Theme",
     "choose_preview_area_theme": "Choose Preview Area Theme",
+    "preview_auto_theme": "Editor will automatically follow system theme (Light/Dark/Sepia)",
     "save_to_cloud": "Save Configuration to Cloud",
     "save_settings": "Save Settings",
     "reset": "Reset",
     "demo_content": "# Editor Theme Preview\n\nThis is an editor theme preview area where you can see the effect of theme settings in real time.",
+    "richtext_demo_content": "<h2>Rich Text Editor Preview</h2><p>This is a <strong>rich text editor</strong> preview area where you can <em>see the effect</em> of theme settings in real time.</p><ul><li>Supports <strong>bold</strong>, <em>italic</em> and more</li><li>Supports ordered and unordered lists</li><li>Supports <a href=\"#\">links</a> and images</li></ul><blockquote><p>Blockquote text style preview</p></blockquote><pre><code>// Code block preview\nconst hello = \"world\";\nconsole.log(hello);</code></pre>",
     "save_not_online": "Not yet online",
     "reset_success": "Reset successful",
-    "editor_preview": "Markdown Editor Preview",
-    "back_to_editor_page": "Back to Editor Page"
+    "editor_preview": "Editor Preview",
+    "markdown_editor": "Markdown",
+    "rich_text_editor": "Rich Text",
+    "back_to_editor_page": "Back to Editor Page",
+    "account": "Account",
+    "login": "Login:",
+    "current_account": "Current Account:",
+    "logout": "Logout",
+    "language_desc": "Interface display language",
+    "login_desc": "Log in to sync settings and files",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "theme_sepia": "Sepia",
+    "theme_light_desc": "Clean, bright interface",
+    "theme_dark_desc": "Soft dark color scheme",
+    "theme_sepia_desc": "Eye-friendly warm beige"
   },
   "compile_view": {
+    "no_files_yet": "No files yet",
     "select": "Select",
     "export": "Export",
     "delete": "Delete",
+    "rename": "Rename",
+    "rename_file": "Rename File",
+    "file_name": "File Name",
+    "file_name_required": "File name cannot be empty",
+    "file_renamed": "File renamed successfully",
     "file_info": "File Information",
     "name": "Name:",
     "type": "Type:",
@@ -78,6 +139,7 @@
     "edge_extension": "Edge (v0.8+)",
     "firefox_extension": "Firefox (v0.68)",
     "under_development": "Under development...",
+    "cycle_theme": "Click to cycle",
     "new_file": "New",
     "import_file": "Import",
     "markdown_guide_tip": "Markdown Guide",
@@ -92,8 +154,11 @@
     "no_files_imported": "No files were imported",
     "cannot_get_file_content": "Cannot get file content from cache",
     "get_file_content_failure": "Failed to get file content",
-    "switched_to_markdown_editor": "Switched to Markdown editor",
-    "switched_to_rich_text_editor": "Switched to Rich Text editor",
+    "markdown_note": "Markdown Note",
+    "markdown_note_desc": "Markdown syntax, great for tech writing",
+    "rich_text_note": "Rich Text Note",
+    "rich_text_note_desc": "WYSIWYG, easy formatting",
+    "rich_text_placeholder": "Start typing...",
     "new_file_created": "New file created",
     "not_bound": "Not bound",
     "redirecting_to_profile": "Redirecting to profile to set default content management platform",
@@ -694,6 +759,47 @@
     "nickname_save_success": "Nickname saved successfully",
     "nickname_save_failure": "Failed to save nickname",
     "nickname_save_retry": "Failed to save nickname, please try again later"
+  },
+  "editor": {
+    "toolbar": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "strikethrough": "Strikethrough",
+      "h1": "Heading 1",
+      "h2": "Heading 2",
+      "h3": "Heading 3",
+      "ul": "Unordered List",
+      "ol": "Ordered List",
+      "link": "Link",
+      "image": "Image",
+      "code": "Code Block",
+      "undo": "Undo",
+      "redo": "Redo"
+    },
+    "shortcuts": {
+      "save": "Ctrl+S Save",
+      "bold": "Ctrl+B Bold",
+      "italic": "Ctrl+I Italic",
+      "tab": "Tab Indent"
+    },
+    "stats": {
+      "chars": "Characters",
+      "lines": "Lines"
+    },
+    "placeholders": {
+      "bold": "bold text",
+      "italic": "italic text",
+      "strikethrough": "strikethrough text",
+      "h1": "Heading 1",
+      "h2": "Heading 2",
+      "h3": "Heading 3",
+      "listItem": "List item",
+      "linkText": "link text",
+      "url": "URL",
+      "imageAlt": "image description",
+      "codeBlock": "code block",
+      "plain_text": "Start writing..."
+    }
   },
   "github_api": {
     "request_failed": "Request failed",

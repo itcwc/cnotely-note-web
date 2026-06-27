@@ -1,462 +1,428 @@
 <template>
-  <el-aside class="user-aside" :style="{ width: `${panel2Size}px` }">
-    <!-- 中间面板内容 -->
-    <div class="user-common-layout">
-      <el-container>
-        <el-header class="repo-header">
-          <!-- 搜索框 -->
-          <div style="flex: 1; min-width: 0">
-            <el-input
-              v-model="localSearchKeyword"
-              :placeholder="t('compile_view.search_files')"
-              size="small"
-              clearable
-              @input="handleSearchInput"
-              @clear="handleSearchClear"
-            >
-              <template #prefix>
-                <el-icon><Search /></el-icon>
-              </template>
-            </el-input>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 8px">
-            <!-- 导入按钮 -->
-            <el-button
-              type="primary"
-              size="small"
-              @click="showImportDialog = true"
-            >
-              <el-icon><Upload /></el-icon>
-            </el-button>
-          </div>
-        </el-header>
-
-        <el-main style="padding: 5px">
-          <template v-if="selectedRepo">
-            <!-- 时光流模式视图 -->
-            <div class="timeline-view">
-              <div v-if="timelineFiles.length > 0" class="flex flex-wrap gap-4">
-                <el-card
-                  v-for="(group, date) in groupFilesByDate(timelineFiles)"
-                  :key="date"
-                  class="timeline-group-card"
-                  :body-style="{ padding: '10px' }"
-                  shadow="hover"
-                >
-                  <template #header>
-                    <div class="timeline-group-header">
-                      <el-icon><Calendar /></el-icon>
-                      <span style="margin-left: 8px; font-weight: bold">{{
-                        date
-                      }}</span>
-                    </div>
-                  </template>
-
-                  <!-- /* 【核心修改】：通过 ID 判断选中，解决重名文件同时选中的 Bug */ -->
-                  <div class="timeline-files">
-                    <div
-                      v-for="file in group"
-                      :key="file.id"
-                      class="timeline-file-item"
-                      :class="{
-                        selected: selectedFile && file.id === selectedFile.id,
-                      }"
-                      @click="handleNodeClick(file, null)"
-                    >
-                      <div class="file-item-content">
-                        <div class="file-item-top">
-                          <div class="timeline-file-name">
-                            <el-icon v-if="file.name.endsWith('.md')"
-                              ><Document
-                            /></el-icon>
-                            <el-icon v-else><Notebook /></el-icon>
-                            <span class="file-text-limit" :title="file.name">{{
-                              file.name
-                            }}</span>
-                          </div>
-                          <div
-                            class="action-trigger"
-                            @click.stop="showMenu(file, $event)"
-                          >
-                            <el-icon class="more-icon"><MoreFilled /></el-icon>
-                          </div>
-                        </div>
-
-                        <div class="file-item-bottom">
-                          <div class="timeline-file-time">
-                            {{
-                              formatTime(
-                                file.updatedAt || file.createdAt || Date.now(),
-                              )
-                            }}
-                          </div>
-                          <el-tag
-                            :type="
-                              (
-                                file.name.split('.').pop() || ''
-                              ).toLowerCase() === 'md'
-                                ? 'primary'
-                                : (
-                                      file.name.split('.').pop() || ''
-                                    ).toLowerCase() === 'html'
-                                  ? 'success'
-                                  : ''
-                            "
-                            size="small"
-                            effect="light"
-                            style="margin-left: 5px"
-                          >
-                            {{ file.name.split(".").pop() }}
-                          </el-tag>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </el-card>
-              </div>
-              <el-empty v-else description="暂无文件" />
-            </div>
-          </template>
-          <el-empty v-else description="暂无数据" />
-
-          <!-- 下拉菜单内容 - 移到组件根级别，脱离父元素 z-index 限制 -->
-          <div
-            v-if="showingMenu"
-            class="dropdown-menu"
-            :style="{ left: menuLeft + 'px', top: menuTop + 'px' }"
-            @click.stop
+  <el-aside class="file-panel" :style="{ width: `${panel2Size}px` }">
+    <div class="panel-inner">
+      <!-- Header: Search + New -->
+      <div class="panel-header">
+        <div class="panel-search">
+          <el-input
+            v-model="localSearchKeyword"
+            :placeholder="t('compile_view.search_files')"
+            size="medium"
+            clearable
+            @input="handleSearchInput"
+            @clear="handleSearchClear"
+            style="font-size: 12px"
           >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+        </div>
+        <!-- <button class="rail-btn" @click="focusSearch" :title="t('compile_view.search_files')">
+          <el-icon size="18"><Search /></el-icon>
+        </button> -->
+      </div>
+
+      <div class="panel-divider" />
+
+      <!-- File List -->
+      <div class="file-list">
+        <template v-if="timelineFiles.length > 0">
+          <template
+            v-for="(group, date) in groupFilesByDate(timelineFiles)"
+            :key="date"
+          >
+            <div class="file-group-header">{{ date }}</div>
             <div
-              class="menu-item"
-              @click.stop="handleAction('export', activeMenuData)"
-              :class="{ 'menu-item-disabled': activeMenuData?.type === 'dir' }"
+              v-for="file in group"
+              :key="file.id"
+              class="file-item"
+              :class="{
+                'file-item--active':
+                  selectedFile && file.id === selectedFile.id,
+              }"
+              @click="handleNodeClick(file, null)"
+              @contextmenu.prevent="showMenu(file, $event)"
             >
-              <el-icon><Download /></el-icon>
-              <span>{{ t("compile_view.export") }}</span>
-            </div>
-            <div
-              class="menu-item"
-              @click.stop="handleAction('delete', activeMenuData)"
-              :class="{ 'menu-item-disabled': activeMenuData?.type === 'dir' }"
-            >
-              <el-icon><Delete /></el-icon>
-              <span>{{ t("compile_view.delete") }}</span>
-            </div>
-
-            <!-- 文件信息展示区域 -->
-            <div class="menu-info-section">
-              <div class="info-title">{{ t("compile_view.file_info") }}</div>
-              <div class="info-item">
-                <span class="info-label">{{ t("compile_view.name") }}</span>
-                <span class="info-value">{{ activeMenuData?.name }}</span>
-              </div>
-              <!-- <div class="info-item">
-                <span class="info-label">{{ t('compile_view.path') }}</span>
-                <span class="info-value">{{ activeMenuData?.path }}</span>
-              </div> -->
-              <div class="info-item">
-                <span class="info-label">{{ t("compile_view.type") }}</span>
-                <el-tag
-                  :type="
-                    (
-                      (activeMenuData?.name &&
-                        activeMenuData?.name.split('.').pop()) ||
-                      ''
-                    ).toLowerCase() === 'md'
-                      ? 'primary'
-                      : (
-                            (activeMenuData?.name &&
-                              activeMenuData?.name.split('.').pop()) ||
-                            ''
-                          ).toLowerCase() === 'html'
-                        ? 'success'
-                        : ''
-                  "
-                  size="small"
-                  effect="light"
-                >
-                  {{
-                    (activeMenuData?.name &&
-                      activeMenuData?.name.split(".").pop()) ||
-                    ""
-                  }}
-                </el-tag>
-              </div>
-            </div>
-          </div>
-        </el-main>
-
-        <!-- 仓库选择对话框 -->
-        <el-dialog
-          v-model="showRepoDialog"
-          :title="t('compile_view.select_repo')"
-          width="50%"
-        >
-          <div v-if="repoLoading" style="padding: 40px; text-align: center">
-            <el-icon class="is-loading"><Loading /></el-icon>
-            <span style="margin-left: 8px">{{
-              t("compile_view.loading_repos")
-            }}</span>
-          </div>
-          <div
-            v-else-if="props.repos.length === 0"
-            style="padding: 40px; text-align: center"
-          >
-            <el-empty :description="t('compile_view.no_repos')" />
-          </div>
-          <div v-else>
-            <el-tree
-              :data="props.repos"
-              :props="{ label: 'full_name', children: 'children' }"
-              :expand-on-click-node="false"
-              @node-click="selectRepoLocal"
-            >
-              <template #default="{ data }">
-                <span class="repo-item">
-                  {{ data.full_name || data.name }}
-                </span>
-              </template>
-            </el-tree>
-          </div>
-          <template #footer>
-            <span class="dialog-footer">
-              <el-button @click="closeRepoDialog">取消</el-button>
-            </span>
-          </template>
-        </el-dialog>
-
-        <!-- 导入确认对话框 -->
-        <el-dialog
-          v-model="showImportDialog"
-          :title="t('compile_view.select_import_method')"
-          width="400px"
-        >
-          <div style="margin-top: 20px">
-            <el-button
-              type="primary"
-              size="large"
-              style="width: 100%; margin-bottom: 12px"
-              @click="handleLocalImport"
-              plain
-            >
-              <el-icon><Upload /></el-icon>
-              {{ t("compile_view.local_import") }}
-            </el-button>
-            <el-button
-              size="large"
-              style="width: 100%; margin-bottom: 12px; margin-left: 0px"
-              @click="handleGoogleDriveImport"
-              type="success"
-              plain
-            >
-              <img
-                src="/imgs/icon/google_drive.png"
-                alt="Google Drive"
-                style="
-                  width: 18px;
-                  height: 18px;
-                  margin-right: 8px;
-                  vertical-align: middle;
+              <svg
+                v-if="
+                  file.editorMode === 'richtext' || file.name.endsWith('.html')
                 "
-              />
-              {{ t("compile_view.google_drive_import") }}
-            </el-button>
-            <el-button
-              size="large"
-              style="width: 100%; margin-left: 0px"
-              @click="openRepoDialogLocal"
-              type="success"
-              plain
-            >
-              <img
-                src="/imgs/icon/github_favicon.svg"
-                alt="GitHub"
-                style="
-                  width: 18px;
-                  height: 18px;
-                  margin-right: 8px;
-                  vertical-align: middle;
-                "
-              />
-              {{ t("compile_view.github_import") }}
-            </el-button>
-          </div>
-          <template #footer>
-            <span class="dialog-footer">
-              <el-button @click="showImportDialog = false">取消</el-button>
-            </span>
-          </template>
-        </el-dialog>
-
-        <!-- Google Drive 文件列表对话框 -->
-        <el-dialog
-          v-model="showGoogleDriveFiles"
-          :title="t('compile_view.select_google_drive_files')"
-          width="680px"
-        >
-          <div
-            v-if="googleDriveLoading"
-            style="padding: 40px; text-align: center"
-          >
-            <el-icon class="is-loading"><Loading /></el-icon>
-            <span style="margin-left: 8px">{{
-              t("compile_view.loading_files")
-            }}</span>
-          </div>
-          <div
-            v-else-if="googleDriveError"
-            style="padding: 20px; color: #f56c6c"
-          >
-            {{ googleDriveError }}
-          </div>
-          <div
-            v-else-if="
-              Array.isArray(googleDriveFiles) && googleDriveFiles.length === 0
-            "
-            style="padding: 40px; text-align: center"
-          >
-            <el-empty :description="t('compile_view.no_files')" />
-          </div>
-          <div
-            v-else-if="Array.isArray(googleDriveFiles)"
-            style="max-height: 400px; overflow-y: auto"
-          >
-            <el-table
-              :data="googleDriveFiles"
-              style="width: 100%"
-              @selection-change="handleGoogleDriveSelectionChange"
-            >
-              <el-table-column type="selection" width="55" />
-              <el-table-column prop="name" label="文件名" width="300" />
-              <el-table-column prop="mimeType" label="文件类型" width="150" />
-              <el-table-column prop="size" label="大小" width="100" />
-            </el-table>
-          </div>
-          <div v-else style="padding: 40px; text-align: center">
-            <el-empty :description="t('compile_view.load_files_failed')" />
-          </div>
-          <template #footer>
-            <span class="dialog-footer">
-              <el-button @click="closeGoogleDriveDialog">取消</el-button>
-              <el-button
-                type="primary"
-                @click="confirmGoogleDriveSelection"
-                :disabled="selectedGoogleDriveFiles.length === 0"
+                class="file-item-icon file-item-icon--richtext"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 256 256"
               >
-                {{
-                  t("compile_view.import_selected_files", {
-                    count: selectedGoogleDriveFiles.length,
-                  })
-                }}
-              </el-button>
-            </span>
-          </template>
-        </el-dialog>
-
-        <!-- 导出确认对话框 -->
-        <el-dialog
-          v-model="showExportDialog"
-          :title="t('compile_view.select_export_format')"
-          width="400px"
-        >
-          <el-form label-position="top" style="margin-top: 20px">
-            <el-form-item :label="t('compile_view.export_format')">
-              <el-select v-model="selectValue" style="width: 100%">
-                <el-option
-                  v-for="item in exportOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                <path d="M0 0h256v256H0z" fill="none" />
+                <path
+                  fill="currentColor"
+                  d="M48 128a12 12 0 0 0 12-12V44h76v48a12 12 0 0 0 12 12h48v12a12 12 0 0 0 24 0V88a12 12 0 0 0-3.51-8.49l-56-56A12 12 0 0 0 152 20H56a20 20 0 0 0-20 20v76a12 12 0 0 0 12 12m135-48h-23V57ZM68 160v48a12 12 0 0 1-24 0v-12H32v12a12 12 0 0 1-24 0v-48a12 12 0 0 1 24 0v12h12v-12a12 12 0 0 1 24 0m60 0a12 12 0 0 1-12 12h-4v36a12 12 0 0 1-24 0v-36h-4a12 12 0 0 1 0-24h32a12 12 0 0 1 12 12m72 0v48a12 12 0 0 1-24 0v-9.36l-.11.16a12 12 0 0 1-19.78 0l-.11-.16V208a12 12 0 0 1-24 0v-48a12 12 0 0 1 21.89-6.8L166 170.82l12.11-17.62A12 12 0 0 1 200 160m56 48a12 12 0 0 1-12 12h-24a12 12 0 0 1-12-12v-48a12 12 0 0 1 24 0v36h12a12 12 0 0 1 12 12"
                 />
-              </el-select>
-            </el-form-item>
-          </el-form>
-          <template #footer>
-            <span class="dialog-footer">
-              <el-button @click="handleExportCancel">取消</el-button>
-              <el-button type="primary" @click="confirmExport">确定</el-button>
-            </span>
-          </template>
-        </el-dialog>
-
-        <!-- 文件选择对话框 -->
-        <el-dialog
-          v-model="showFileSelectionDialog"
-          :title="t('compile_view.select_files_to_import')"
-          width="600px"
-        >
-          <div
-            v-if="fileSelectionLoading"
-            style="padding: 40px; text-align: center"
-          >
-            <el-icon class="is-loading"><Loading /></el-icon>
-            <span style="margin-left: 8px">{{
-              t("compile_view.loading_files")
-            }}</span>
-          </div>
-          <div
-            v-else-if="apiFileTree.length === 0"
-            style="padding: 40px; text-align: center"
-          >
-            <el-empty :description="t('compile_view.no_files_in_repo')" />
-          </div>
-          <div v-else style="max-height: 400px; overflow-y: auto">
-            <el-tree
-              :data="apiFileTree"
-              show-checkbox
-              node-key="path"
-              :props="{ label: 'name', children: 'children' }"
-              default-expand-all
-              @check-change="handleFileCheckChange"
-            >
-              <template #default="{ data }">
-                <span class="file-item">
-                  {{ data.name }}
-                </span>
-              </template>
-            </el-tree>
-          </div>
-          <template #footer>
-            <span class="dialog-footer">
-              <el-button @click="closeFileSelectionDialog">取消</el-button>
-              <el-button
-                type="primary"
-                @click="confirmFileSelection"
-                :disabled="selectedFiles.length === 0"
+              </svg>
+              <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                class="file-item-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 256 256"
               >
-                {{
-                  t("compile_view.import_selected_files", {
-                    count: selectedFiles.length,
-                  })
-                }}
-              </el-button>
-            </span>
+                <path d="M0 0h256v256H0z" fill="none" />
+                <path
+                  fill="currentColor"
+                  d="M100 152v56a12 12 0 0 1-24 0v-17.93l-6.17 8.81a12 12 0 0 1-19.66 0L44 190.07V208a12 12 0 0 1-24 0v-56a12 12 0 0 1 21.83-6.88L60 171.07l18.17-25.95A12 12 0 0 1 100 152m84 28a40 40 0 0 1-40 40h-16a12 12 0 0 1-12-12v-56a12 12 0 0 1 12-12h16a40 40 0 0 1 40 40m-24 0a16 16 0 0 0-16-16h-4v32h4a16 16 0 0 0 16-16m60-92v136a12 12 0 0 1-24 0V104h-48a12 12 0 0 1-12-12V44H60v64a12 12 0 0 1-24 0V40a20 20 0 0 1 20-20h96a12 12 0 0 1 8.49 3.52l56 56A12 12 0 0 1 220 88m-60-8h23l-23-23Z"
+                />
+              </svg>
+              <span class="file-item-name" :title="file.name">{{
+                file.name
+              }}</span>
+            </div>
           </template>
-        </el-dialog>
-
-        
-      </el-container>
+        </template>
+        <div v-else class="file-empty">
+          {{ t("compile_view.no_files_yet") }}
+        </div>
+      </div>
     </div>
+
+    <!-- Context Menu -->
+    <div
+      v-if="showingMenu"
+      class="dropdown-menu"
+      :style="{ left: menuLeft + 'px', top: menuTop + 'px' }"
+      @click.stop
+    >
+      <div
+        class="menu-item"
+        @click.stop="handleAction('rename', activeMenuData)"
+        :class="{ 'menu-item-disabled': activeMenuData?.type === 'dir' }"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+          <path d="m15 5 4 4" />
+        </svg>
+        <span>{{ t("compile_view.rename") }}</span>
+      </div>
+      <div
+        class="menu-item"
+        @click.stop="handleAction('export', activeMenuData)"
+        :class="{ 'menu-item-disabled': activeMenuData?.type === 'dir' }"
+      >
+        <el-icon><Download /></el-icon>
+        <span>{{ t("compile_view.export") }}</span>
+      </div>
+      <div
+        class="menu-item"
+        @click.stop="handleAction('delete', activeMenuData)"
+        :class="{ 'menu-item-disabled': activeMenuData?.type === 'dir' }"
+      >
+        <el-icon><Delete /></el-icon>
+        <span>{{ t("compile_view.delete") }}</span>
+      </div>
+    </div>
+
+    <!-- Import Dialog -->
+    <el-dialog
+      v-model="showImportDialog"
+      :title="t('compile_view.select_import_method')"
+      width="400px"
+    >
+      <div style="margin-top: 20px">
+        <el-button
+          type="primary"
+          size="large"
+          style="width: 100%; margin-bottom: 12px"
+          @click="handleLocalImport"
+          plain
+        >
+          <el-icon><Upload /></el-icon>
+          {{ t("compile_view.local_import") }}
+        </el-button>
+        <el-button
+          size="large"
+          style="width: 100%; margin-bottom: 12px; margin-left: 0px"
+          @click="handleGoogleDriveImport"
+          type="success"
+          plain
+        >
+          <img
+            src="/imgs/icon/google_drive.png"
+            alt="Google Drive"
+            style="
+              width: 18px;
+              height: 18px;
+              margin-right: 8px;
+              vertical-align: middle;
+            "
+          />
+          {{ t("compile_view.google_drive_import") }}
+        </el-button>
+        <el-button
+          size="large"
+          style="width: 100%; margin-left: 0px"
+          @click="openRepoDialogLocal"
+          type="success"
+          plain
+        >
+          <img
+            src="/imgs/icon/github_favicon.svg"
+            alt="GitHub"
+            style="
+              width: 18px;
+              height: 18px;
+              margin-right: 8px;
+              vertical-align: middle;
+            "
+          />
+          {{ t("compile_view.github_import") }}
+        </el-button>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showImportDialog = false">{{
+            t("common.cancel")
+          }}</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- Export Dialog -->
+    <el-dialog
+      v-model="showExportDialog"
+      :title="t('compile_view.select_export_format')"
+      width="400px"
+    >
+      <el-form label-position="top" style="margin-top: 20px">
+        <el-form-item :label="t('compile_view.export_format')">
+          <el-select v-model="selectValue" style="width: 100%">
+            <el-option
+              v-for="item in exportOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="handleExportCancel">{{
+            t("common.cancel")
+          }}</el-button>
+          <el-button type="primary" @click="confirmExport">{{
+            t("common.confirm")
+          }}</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- Rename Dialog -->
+    <el-dialog
+      v-model="showRenameDialog"
+      :title="t('compile_view.rename_file')"
+      width="400px"
+    >
+      <el-form label-position="top" style="margin-top: 20px">
+        <el-form-item :label="t('compile_view.file_name')">
+          <div class="rename-input-wrapper">
+            <el-input
+              v-model="renameValue"
+              ref="renameInputRef"
+              @keyup.enter="confirmRename"
+            />
+            <span class="rename-extension">.{{ renameExtension }}</span>
+          </div>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="showRenameDialog = false">{{
+            t("common.cancel")
+          }}</el-button>
+          <el-button type="primary" @click="confirmRename">{{
+            t("common.confirm")
+          }}</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- Repo Selection Dialog -->
+    <el-dialog
+      v-model="showRepoDialog"
+      :title="t('compile_view.select_repo')"
+      width="50%"
+    >
+      <div v-if="repoLoading" style="padding: 40px; text-align: center">
+        <el-icon class="is-loading"><Loading /></el-icon>
+        <span style="margin-left: 8px">{{
+          t("compile_view.loading_repos")
+        }}</span>
+      </div>
+      <div
+        v-else-if="props.repos.length === 0"
+        style="padding: 40px; text-align: center"
+      >
+        <el-empty :description="t('compile_view.no_repos')" />
+      </div>
+      <div v-else>
+        <el-tree
+          :data="props.repos"
+          :props="{ label: 'full_name', children: 'children' }"
+          :expand-on-click-node="false"
+          @node-click="selectRepoLocal"
+        >
+          <template #default="{ data }">
+            <span class="repo-item">{{ data.full_name || data.name }}</span>
+          </template>
+        </el-tree>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeRepoDialog">{{
+            t("common.cancel")
+          }}</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- Google Drive Files Dialog -->
+    <el-dialog
+      v-model="showGoogleDriveFiles"
+      :title="t('compile_view.select_google_drive_files')"
+      width="680px"
+    >
+      <div v-if="googleDriveLoading" style="padding: 40px; text-align: center">
+        <el-icon class="is-loading"><Loading /></el-icon>
+        <span style="margin-left: 8px">{{
+          t("compile_view.loading_files")
+        }}</span>
+      </div>
+      <div v-else-if="googleDriveError" style="padding: 20px; color: #f56c6c">
+        {{ googleDriveError }}
+      </div>
+      <div
+        v-else-if="
+          Array.isArray(googleDriveFiles) && googleDriveFiles.length === 0
+        "
+        style="padding: 40px; text-align: center"
+      >
+        <el-empty :description="t('compile_view.no_files')" />
+      </div>
+      <div
+        v-else-if="Array.isArray(googleDriveFiles)"
+        style="max-height: 400px; overflow-y: auto"
+      >
+        <el-table
+          :data="googleDriveFiles"
+          style="width: 100%"
+          @selection-change="handleGoogleDriveSelectionChange"
+        >
+          <el-table-column type="selection" width="55" />
+          <el-table-column prop="name" label="文件名" width="300" />
+          <el-table-column prop="mimeType" label="文件类型" width="150" />
+          <el-table-column prop="size" label="大小" width="100" />
+        </el-table>
+      </div>
+      <div v-else style="padding: 40px; text-align: center">
+        <el-empty description="加载文件失败" />
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeGoogleDriveDialog">{{
+            t("common.cancel")
+          }}</el-button>
+          <el-button
+            type="primary"
+            @click="confirmGoogleDriveSelection"
+            :disabled="selectedGoogleDriveFiles.length === 0"
+          >
+            {{
+              t("compile_view.import_selected_files", {
+                count: selectedGoogleDriveFiles.length,
+              })
+            }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <!-- File Selection Dialog -->
+    <el-dialog
+      v-model="showFileSelectionDialog"
+      :title="t('compile_view.select_files_to_import')"
+      width="600px"
+    >
+      <div
+        v-if="fileSelectionLoading"
+        style="padding: 40px; text-align: center"
+      >
+        <el-icon class="is-loading"><Loading /></el-icon>
+        <span style="margin-left: 8px">{{
+          t("compile_view.loading_files")
+        }}</span>
+      </div>
+      <div
+        v-else-if="apiFileTree.length === 0"
+        style="padding: 40px; text-align: center"
+      >
+        <el-empty :description="t('compile_view.no_files_in_repo')" />
+      </div>
+      <div v-else style="max-height: 400px; overflow-y: auto">
+        <el-tree
+          :data="apiFileTree"
+          show-checkbox
+          node-key="path"
+          :props="{ label: 'name', children: 'children' }"
+          default-expand-all
+          @check-change="handleFileCheckChange"
+        >
+          <template #default="{ data }">
+            <span class="file-item">{{ data.name }}</span>
+          </template>
+        </el-tree>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="closeFileSelectionDialog">{{
+            t("common.cancel")
+          }}</el-button>
+          <el-button
+            type="primary"
+            @click="confirmFileSelection"
+            :disabled="selectedFiles.length === 0"
+          >
+            {{
+              t("compile_view.import_selected_files", {
+                count: selectedFiles.length,
+              })
+            }}
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </el-aside>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, nextTick } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { useI18n } from "vue-i18n";
 import {
-  Document,
   Delete,
-  More,
   Download,
   Search,
-  Calendar,
   Upload,
-  UploadFilled,
   Loading,
-  Notebook,
-  MoreFilled,
 } from "@element-plus/icons-vue";
 import { indexedDBHelper } from "../../utils/indexedDB";
 import githubApi from "../../api/github";
@@ -494,6 +460,7 @@ const emit = defineEmits([
   "handleNodeCollapse",
   "handleNodeClick",
   "deleteFile",
+  "renameFile",
   "exportFile",
   "handleSearch",
   "resetSearch",
@@ -518,9 +485,13 @@ const handleRepoLoaded = () => {
   repoLoading.value = false;
 };
 
-// 暴露给父组件的方法，用于通知仓库列表加载完成
+// 暴露给父组件的方法，用于通知仓库列表加载完成 / 打开仓库选择对话框
 defineExpose({
   handleRepoLoaded,
+  openRepoSelectDialog: () => {
+    repoLoading.value = true;
+    showRepoDialog.value = true;
+  },
 });
 
 /* ================= 类型 ================= */
@@ -554,6 +525,12 @@ const selectedFile = ref<TreeData | null>(null); // 存储当前选中的文件�
 
 const showExportDialog = ref(false);
 const exportTarget = ref<TreeData | null>(null);
+
+const showRenameDialog = ref(false);
+const renameTarget = ref<TreeData | null>(null);
+const renameValue = ref("");
+const renameExtension = ref("");
+const renameInputRef = ref<any>(null);
 const selectValue = ref("md");
 
 /* ================= 导入流程专用状态 ================= */
@@ -687,6 +664,26 @@ const handleAction = (command: string, data: TreeData | null) => {
   const currentData = data;
 
   switch (command) {
+    case "rename":
+      closeMenu();
+      renameTarget.value = currentData;
+      {
+        const dotIndex = currentData.name.lastIndexOf(".");
+        if (dotIndex > 0) {
+          renameValue.value = currentData.name.substring(0, dotIndex);
+          renameExtension.value = currentData.name.substring(dotIndex + 1);
+        } else {
+          renameValue.value = currentData.name;
+          renameExtension.value = "";
+        }
+      }
+      showRenameDialog.value = true;
+      nextTick(() => {
+        renameInputRef.value?.focus();
+        renameInputRef.value?.select();
+      });
+      break;
+
     case "delete":
       closeMenu();
       ElMessageBox.confirm(
@@ -736,6 +733,28 @@ const confirmExport = () => {
   exportTarget.value = null;
 };
 
+/* ================= 重命名相关 ================= */
+
+const confirmRename = () => {
+  if (!renameTarget.value) return;
+  const baseName = renameValue.value.trim();
+  if (!baseName) {
+    ElMessage.warning(t("compile_view.file_name_required"));
+    return;
+  }
+  const newName = renameExtension.value
+    ? `${baseName}.${renameExtension.value}`
+    : baseName;
+  if (newName === renameTarget.value.name) {
+    showRenameDialog.value = false;
+    return;
+  }
+
+  emit("renameFile", renameTarget.value, newName);
+  showRenameDialog.value = false;
+  renameTarget.value = null;
+};
+
 /* ================= 搜索相关方法 ================= */
 
 // 处理搜索输入
@@ -747,6 +766,16 @@ const handleSearchInput = (value: string) => {
 const handleSearchClear = () => {
   localSearchKeyword.value = "";
   emit("resetSearch");
+};
+
+// 聚焦搜索框
+const focusSearch = () => {
+  const searchInput = document.querySelector(
+    ".panel-search input",
+  ) as HTMLInputElement;
+  if (searchInput) {
+    searchInput.focus();
+  }
 };
 
 /* ================= 导入相关方法 ================= */
@@ -790,6 +819,49 @@ const handleLocalImport = () => {
   input.click();
 };
 
+// 把 GitHub 扁平 tree 转成 el-tree 需要的嵌套结构
+const buildFileTree = (tree: any[]): any[] => {
+  const root: any[] = [];
+  const map = new Map<string, any>();
+
+  for (const item of tree) {
+    const parts = item.path.split("/");
+    let currentPath = "";
+
+    for (let i = 0; i < parts.length; i++) {
+      const part = parts[i];
+      const fullPath = currentPath ? `${currentPath}/${part}` : part;
+
+      if (!map.has(fullPath)) {
+        const isFile = i === parts.length - 1 && item.type === "blob";
+        map.set(fullPath, {
+          name: part,
+          path: fullPath,
+          type: isFile ? "file" : "dir",
+          children: isFile ? undefined : [],
+        });
+      }
+
+      currentPath = fullPath;
+    }
+  }
+
+  for (const [path, node] of map) {
+    const parts = path.split("/");
+    if (parts.length === 1) {
+      root.push(node);
+    } else {
+      const parentPath = parts.slice(0, -1).join("/");
+      const parent = map.get(parentPath);
+      if (parent && parent.children) {
+        parent.children.push(node);
+      }
+    }
+  }
+
+  return root;
+};
+
 // 处理仓库选择
 const selectRepoLocal = async (repo: any) => {
   selectedRepoData.value = repo;
@@ -805,8 +877,11 @@ const selectRepoLocal = async (repo: any) => {
   // 直接从 API 获取文件树
   fileSelectionLoading.value = true;
   try {
-    const data = await githubApi.repos.getRepoTree(repo.full_name || repo.name);
-    apiFileTree.value = data;
+    const data = await githubApi.repos.getRepoTree(
+      repo.full_name || repo.name,
+    );
+    // 把 GitHub 扁平 tree 转成嵌套树
+    apiFileTree.value = buildFileTree(data);
   } catch (error) {
     console.error("获取仓库文件树失败:", error);
     ElMessage.error(t("compile_view.get_repo_tree_failure"));
@@ -1178,7 +1253,7 @@ const handleNodeClick = (data: TreeData, node: any) => {
   transition: all 0.3s ease;
 }
 
-.repo-item:hover {
+.repo-itemext-icon {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -1530,5 +1605,36 @@ el-main {
 
 :deep(.el-button--plain.is-primary:hover) {
   background-color: rgba(64, 158, 255, 0.1);
+}
+
+/* 重命名输入框样式 */
+.rename-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.rename-input-wrapper :deep(.el-input) {
+  flex: 1;
+}
+
+.rename-input-wrapper :deep(.el-input .el-input__wrapper) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right: none;
+}
+
+.rename-extension {
+  padding: 0 12px;
+  height: 32px;
+  line-height: 32px;
+  background: var(--dt-btn-bg);
+  border: 1px solid var(--dt-border);
+  border-left: none;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  color: var(--dt-text-muted);
+  font-size: 14px;
+  white-space: nowrap;
 }
 </style>

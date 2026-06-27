@@ -40,12 +40,15 @@
 </template>
 
 <script>
+import { onMounted } from "vue";
 import { useI18n } from "vue-i18n";
+import { useTheme } from "./composables/useTheme";
 
 export default {
   name: "App",
   setup() {
     const { locale } = useI18n();
+    const { theme } = useTheme();
 
     // 从 localStorage 中获取已保存的语言设置，如果没有则使用默认语言
     const savedLanguage = localStorage.getItem("selectedLanguage");
@@ -65,6 +68,7 @@ export default {
     return {
       selectedLanguage,
       changeLanguage,
+      theme,
     };
   },
 };
@@ -133,21 +137,41 @@ body {
   font-size: 16px;
 }
 
-div::-webkit-scrollbar {
-  width: 3px;
+/* ========== Custom Scrollbar — Design System ========== */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--dt-text-muted) transparent;
 }
 
-div::-webkit-scrollbar-track {
-  background: rgb(239, 239, 239);
-  border-radius: 2px;
+/* Chrome / Edge / Safari — Vertical */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-div::-webkit-scrollbar-thumb {
-  background: #40a0ff49;
-  border-radius: 10px;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-div::-webkit-scrollbar-thumb:hover {
-  background: #40a0ff;
+::-webkit-scrollbar-thumb {
+  background: var(--dt-text-muted);
+  border-radius: 3px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dt-text-secondary);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--dt-text-primary);
+}
+
+/* Corner (when both scrollbars visible) */
+::-webkit-scrollbar-corner {
+  background: transparent;
 }
 </style>

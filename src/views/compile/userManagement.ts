@@ -1,6 +1,11 @@
 import { ElMessage } from "element-plus";
-import { authApi } from "../../api/auth";
 import { useRouter } from "vue-router";
+import {
+  isLoggedIn as checkLoggedIn,
+  getCurrentUser,
+  logout as oauthLogout,
+  type UserInfo,
+} from "../../utils/pkce";
 
 // 定义状态类型
 interface State {
@@ -30,88 +35,65 @@ const handleSettings = () => {
 // 初始化用户信息
 const initUserInfo = () => {
   if (!state) return;
-  
-  const savedUserInfo = localStorage.getItem("user_info");
-  if (savedUserInfo) {
-    try {
-      const parsedUserInfo = JSON.parse(savedUserInfo);
-      state.userInfo.value = parsedUserInfo;
+
+  if (checkLoggedIn()) {
+    const user = getCurrentUser();
+    if (user) {
+      state.userInfo.value = {
+        email: user.email,
+        avatar: user.avatar,
+        nickname: user.name,
+        access_token: localStorage.getItem("access_token") || "",
+        default_storage_provider: user.provider,
+      };
       state.isLoggedIn.value = true;
-      // 更新选中的平台
-      state.selectedPlatform.value = localStorage.getItem("selected_platform") ||
-        state.userInfo.value.default_storage_provider ||
-        "";
-      // console.log('用户已登录:', state.userInfo.value)
-    } catch (error) {
-      console.error("解析用户信息失败:", error);
-      state.isLoggedIn.value = false;
-      console.log("解析用户信息失败，用户未登录");
+      state.selectedPlatform.value =
+        localStorage.getItem("selected_platform") || user.provider || "";
     }
   } else {
-    // console.log("未找到用户信息，用户未登录");
+    state.isLoggedIn.value = false;
   }
-  // console.log('当前登录状态:', state.isLoggedIn.value)
 };
 
-// 处理头像点击
+// 处理头像点击 — 跳转设置页
 const handleAvatarClick = () => {
   if (!state) return;
-  
-  if (!state.isLoggedIn.value) {
-    // 未登录，跳转到登录页面
-    router.push("/login");
-  } else {
-    // 已登录，跳转到个人中心页面
-    router.push("/profile/account");
-  }
+  router.push("/settings");
 };
 
 // 处理退出登录
-const handleLogout = async () => {
+const handleLogout = () => {
   if (!state || !t) return;
-  
-  try {
-    // 调用后端退出登录接口
-    await authApi.logout();
-  } catch (error) {
-    console.error("退出登录失败:", error);
-  } finally {
-    // 清除本地存储的用户信息
-    localStorage.removeItem("user_info");
-    localStorage.removeItem("access_token");
 
-    // 重置用户状态
-    state.isLoggedIn.value = false;
-    state.userInfo.value = {
-      email: "",
-      avatar: "",
-      nickname: "",
-      access_token: "",
-      default_storage_provider: "",
-    };
+  oauthLogout();
 
-    // 关闭菜单
-    if (state.userMenuRef.value) {
-      state.userMenuRef.value.hide();
-    }
+  // 重置用户状态
+  state.isLoggedIn.value = false;
+  state.userInfo.value = {
+    email: "",
+    avatar: "",
+    nickname: "",
+    access_token: "",
+    default_storage_provider: "",
+  };
 
-    // 显示退出成功消息
-    ElMessage.success(t("compile_view.logout_success"));
-
-    // 跳转到登录页面
-    router.push("/login");
+  // 关闭菜单
+  if (state.userMenuRef.value) {
+    state.userMenuRef.value.hide();
   }
+
+  ElMessage.success(t("compile_view.logout_success"));
 };
 
 // 处理登录/退出登录按钮点击
 const handleLoginLogout = () => {
   if (!state) return;
-  
-  console.log("登录/退出登录按钮点击，当前登录状态:", state.isLoggedIn.value);
+
   if (state.isLoggedIn.value) {
     handleLogout();
   } else {
-    router.push("/login");
+    // 跳转设置页登录
+    router.push("/settings");
   }
 };
 

@@ -5,6 +5,8 @@ import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 import { fileURLToPath } from 'url';
+import { githubOAuthProxy } from './vite-plugin-github-proxy';
+import { googleOAuthProxy } from './vite-plugin-google-proxy';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -16,15 +18,19 @@ export default defineConfig({
     }),
     Components({
       resolvers: [ElementPlusResolver()],
-    })
+    }),
+    // GitHub OAuth token 代理（开发环境）
+    githubOAuthProxy(),
+    // Google OAuth token 代理（开发环境）
+    googleOAuthProxy(),
   ],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
     },
-    extensions: ['.ts', '.json', '.vue']
+    extensions: ['.js', '.ts', '.json', '.vue']
   },
   server: {
-    port: 5174
+    port: 5174,
   }
 });

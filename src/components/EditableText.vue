@@ -58,6 +58,10 @@ const stopEdit = () => {
   isEditing.value = false;
   emit("update:modelValue", localValue.value.trim());
 };
+
+defineExpose({
+  startEdit,
+});
 </script>
 
 <style scoped>
@@ -68,19 +72,47 @@ const stopEdit = () => {
 
 .editable-text {
   cursor: pointer;
-  border-bottom: 1px dashed transparent;
-  transition: border-color 0.2s;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--el-text-color);
+  transition: color 0.2s;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--dt-text-primary);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .editable-text:hover {
-  border-color: #409eff;
+  color: var(--dt-accent);
 }
 
 .editable-input {
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 14px;
+  font-weight: 500;
+  width: 200px;
+}
+
+.editable-input :deep(.el-input__wrapper) {
+  background: var(--dt-bg-app);
+  border: 1px solid var(--dt-border);
+  box-shadow: none;
+}
+
+.editable-input :deep(.el-input__wrapper:hover) {
+  border-color: var(--dt-accent);
+}
+
+.editable-input :deep(.el-input__wrapper.is-focus) {
+  border-color: var(--dt-accent);
+  box-shadow: 0 0 0 1px var(--dt-accent) inset;
+}
+
+.editable-input :deep(.el-input__inner) {
+  color: var(--dt-text-primary);
+  font-weight: 600;
+}
+
+.editable-input :deep(.el-input__inner::placeholder) {
+  color: var(--dt-text-muted);
 }
 </style>
