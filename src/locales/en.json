@@ -1,4 +1,9 @@
 {
+  "not_found": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "auto_redirect": "Redirecting to home in {seconds}s..."
+  },
   "common": {
     "cancel": "Cancel",
     "confirm": "Confirm",
@@ -16,7 +21,10 @@
     "ProfilePassword": "Password Change - cnotely",
     "ProfileEditor": "Markdown Editor Settings - cnotely",
     "TermsOfService": "Terms of Service - cnotely",
-    "OAuthCallback": "Login Processing - cnotely"
+    "OAuthCallback": "Login Processing - cnotely",
+    "GitHubCallback": "Login Processing - cnotely",
+    "GoogleCallback": "Login Processing - cnotely",
+    "NotFound": "Page Not Found - cnotely"
   },
   "editor_view": {
     "left": {

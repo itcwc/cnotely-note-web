@@ -1,4 +1,9 @@
 {
+    "not_found": {
+        "title": "页面未找到",
+        "description": "您访问的页面不存在或已被移动。",
+        "auto_redirect": "{seconds} 秒后自动返回首页..."
+    },
     "common": {
         "cancel": "取消",
         "confirm": "确认",
@@ -16,7 +21,10 @@
         "ProfilePassword": "密码修改 - cnotely",
         "ProfileEditor": "Markdown编辑器设置 - cnotely",
         "TermsOfService": "服务条款 - cnotely",
-        "OAuthCallback": "登录处理 - cnotely"
+        "OAuthCallback": "登录处理 - cnotely",
+        "GitHubCallback": "登录处理 - cnotely",
+        "GoogleCallback": "登录处理 - cnotely",
+        "NotFound": "页面未找到 - cnotely"
     },
     "editor_view": {
         "left": {
