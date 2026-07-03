@@ -12,6 +12,7 @@ import {
 import { indexedDBHelper, StoredFile } from "../../utils/indexedDB";
 import { TreeData, SelectedFile } from "./types";
 import { sortFilesByTime } from "./search";
+import { track } from "../../utils/analytics-sdk.js";
 
 // 定义状态类型
 interface State {
@@ -140,6 +141,9 @@ const autoCreateFirstFile = async (initialContent: string, t: any) => {
     // 7. 更新侧边栏
     await sortFilesByTime();
     localStorage.setItem("lastSelectedFile", fullFileName);
+
+    // 上报笔记创建事件
+    track("note_created", { type: fileType, auto: true });
 
   } catch (error) {
     console.error("自动创建失败:", error);
@@ -518,6 +522,9 @@ const createNewFile = async (t: any) => {
     state.showNewFileDialog.value = false;
     ElMessage.success(t("compile_view.new_file_created"));
 
+    // 上报笔记创建事件
+    track("note_created", { type: fileType });
+
   } finally {
     // 5. 延迟释放锁
     setTimeout(() => {
@@ -757,6 +764,9 @@ const restoreFilesFromIndexedDB = async (t: any) => {
   try {
     state.isInitializing.value = true;
     const files = await indexedDBHelper.getAllFiles();
+
+    // 上报笔记总数
+    track("notes_total", { count: files.length });
 
     if (files.length > 0) {
       // ... 原有的恢复逻辑 ...
