@@ -36,6 +36,7 @@ import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
 import { Loading, CircleCheck, CircleClose } from "@element-plus/icons-vue";
 import { handleOAuthCallback } from "../utils/pkce";
+import { updateUser } from "../utils/analytics-sdk.js";
 
 const route = useRoute();
 const router = useRouter();
@@ -64,24 +65,27 @@ onMounted(async () => {
     return;
   }
 
-  try {
-    const result = await handleOAuthCallback(code, state);
+      try {
+        const result = await handleOAuthCallback(code, state);
 
-    // 如果是弹窗模式，通知主窗口
-    if (window.opener) {
-      window.opener.postMessage(
-        {
-          type: `${result.provider}-login-success`,
-          user: result.user,
-        },
-        window.location.origin,
-      );
-      setTimeout(() => window.close(), 500);
-    } else {
-      // 主窗口模式，直接跳首页
-      ElMessage.success(t("oauth_callback.login_success"));
-      setTimeout(() => router.push("/"), 800);
-    }
+        // 上报登录事件
+        updateUser(result.user.username, result.provider);
+
+        // 如果是弹窗模式，通知主窗口
+        if (window.opener) {
+          window.opener.postMessage(
+            {
+              type: `${result.provider}-login-success`,
+              user: result.user,
+            },
+            window.location.origin,
+          );
+          setTimeout(() => window.close(), 500);
+        } else {
+          // 主窗口模式，直接跳首页
+          ElMessage.success(t("oauth_callback.login_success"));
+          setTimeout(() => router.push("/"), 800);
+        }
 
     isCompleted.value = true;
     isSuccess.value = true;

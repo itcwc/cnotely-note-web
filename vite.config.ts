@@ -32,5 +32,12 @@ export default defineConfig({
   },
   server: {
     port: 5174,
+    proxy: {
+      // Analytics Worker 代理（开发环境）
+      '/api/analytics': {
+        target: 'http://localhost:8787',
+        changeOrigin: true,
+      },
+    },
   }
 });
