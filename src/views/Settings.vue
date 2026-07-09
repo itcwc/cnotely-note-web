@@ -277,7 +277,7 @@ const autoPreviewTheme = computed(() => {
   return theme.value === 'dark' ? 'dark' : 'default';
 });
 
-const height = "200";
+const height = computed(() => "320");
 
 // 保存到 localStorage
 const savelocalStorage = (key, value) => {
@@ -353,10 +353,7 @@ function resetSettings() {
 .settings-content {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
-  max-width: 1440px;
-  width: 100%;
-  margin: 0 auto;
+  padding: 24px 24px;
 }
 
 /* ========== Sections ========== */
