@@ -292,6 +292,7 @@ setSearchState({
 import {
   setExtensionState,
   handleCrossPageSync,
+  tryUrlImport,
   registerExtensionListeners,
   cleanupExtensionListeners,
 } from "./compile/extensionMessage";
@@ -440,6 +441,9 @@ onMounted(async () => {
 
   // 处理跨页面跳转同步
   handleCrossPageSync();
+
+  // 处理来自扩展的 URL 参数导入（?import=1&note=...）
+  tryUrlImport();
 
   // 初始化文件列表
   await sortFilesByTime();

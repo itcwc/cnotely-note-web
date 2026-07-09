@@ -53,3 +53,23 @@ export const i18n = createI18n({
 app.use(router); // 使用路由
 app.use(i18n);
 app.mount("#app"); // 挂载应用
+
+// 解析来自浏览器扩展的 URL 导入（?import=1&note=<encoded JSON>）
+// 数据暂存到 window.__pendingExtensionImport，待 Compile.vue 注册扩展状态后消费
+(function setupUrlImport() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("import") === "1" && params.get("note")) {
+      const decoded = JSON.parse(decodeURIComponent(params.get("note")!));
+      (window as any).__pendingExtensionImport = decoded;
+      // 立即清理 URL，避免刷新重复导入
+      const u = new URL(window.location.href);
+      u.searchParams.delete("import");
+      u.searchParams.delete("note");
+      u.searchParams.delete("from");
+      window.history.replaceState({}, "", u.pathname + u.search + u.hash);
+    }
+  } catch (e) {
+    console.error("[urlImport] parse failed:", e);
+  }
+})();

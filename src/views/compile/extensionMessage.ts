@@ -122,6 +122,21 @@ const handleCrossPageSync = async () => {
   }
 };
 
+// 处理来自扩展的 URL 参数导入（场景 C）
+// 插件投射 URL 形如：?import=1&note=<encoded JSON>
+// 数据在 main.ts 解析后暂存到 window.__pendingExtensionImport，待 Compile.vue 注册 state 后消费
+const tryUrlImport = async () => {
+  if (typeof window === "undefined") return;
+  const pending = (window as any).__pendingExtensionImport;
+  if (!pending || !state) return;
+  (window as any).__pendingExtensionImport = null;
+  try {
+    await processSyncData(pending);
+  } catch (err) {
+    console.error("[urlImport] process failed:", err);
+  }
+};
+
 // 注册插件消息监听器
 const registerExtensionListeners = () => {
   window.addEventListener("message", handleExtensionMessage);
@@ -136,6 +151,7 @@ export {
   processSyncData,
   handleExtensionMessage,
   handleCrossPageSync,
+  tryUrlImport,
   registerExtensionListeners,
   cleanupExtensionListeners,
 };
