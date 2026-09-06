@@ -1,7 +1,10 @@
 {
   "name": "cnotely",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "A modern note & Markdown editing platform built with Vue 3, TypeScript and Vite",
+  "license": "MIT",
+  "author": "cnotely",
   "type": "module",
   "scripts": {
     "dev": "vite",
