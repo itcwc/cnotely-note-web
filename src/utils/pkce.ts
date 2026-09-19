@@ -86,12 +86,18 @@ const GITHUB_TOKEN_URL =
 const GOOGLE_TOKEN_URL =
   import.meta.env.VITE_GOOGLE_TOKEN_PROXY_URL || "/api/google/token";
 
+// 部署子路径（Vite base）。Dev 为 '/'，GitHub Pages project site 为 '/cnote-web/'
+const BASE_URL = import.meta.env.BASE_URL || "/";
+
+// OAuth 回调完整路径（含部署子路径），如 https://<origin>/cnote-web/github-callback
+const callbackUrl = (path: string) => `${window.location.origin}${BASE_URL}${path}`;
+
 /** GitHub PKCE 登录：生成 verifier → 跳转授权页 */
 export async function loginWithGitHub(): Promise<void> {
   const verifier = generateCodeVerifier();
   const challenge = await generateCodeChallenge(verifier);
   const state = generateState();
-  const redirectUri = `${window.location.origin}/github-callback`;
+  const redirectUri = callbackUrl("github-callback");
 
   savePkceState(verifier, state, "github");
 
@@ -122,7 +128,7 @@ export async function loginWithGoogle(): Promise<void> {
   const verifier = generateCodeVerifier();
   const challenge = await generateCodeChallenge(verifier);
   const state = generateState();
-  const redirectUri = `${window.location.origin}/google-callback`;
+  const redirectUri = callbackUrl("google-callback");
 
   // 调试日志
   console.log("[Google OAuth] 发起登录", {
@@ -222,7 +228,7 @@ interface TokenResponse {
 
 /** GitHub: code → access_token */
 async function exchangeGitHubCode(code: string, verifier: string): Promise<TokenResponse> {
-  const redirectUri = `${window.location.origin}/github-callback`;
+  const redirectUri = callbackUrl("github-callback");
 
   const params = new URLSearchParams({
     client_id: GITHUB_CLIENT_ID,
@@ -256,7 +262,7 @@ async function exchangeGitHubCode(code: string, verifier: string): Promise<Token
 
 /** Google: code → access_token + refresh_token */
 async function exchangeGoogleCode(code: string, verifier: string): Promise<TokenResponse> {
-  const redirectUri = `${window.location.origin}/google-callback`;
+  const redirectUri = callbackUrl("google-callback");
 
   console.log("[Google OAuth] 开始交换 token", {
     redirectUri,
