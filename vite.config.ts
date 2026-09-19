@@ -11,10 +11,9 @@ import { googleOAuthProxy } from './vite-plugin-google-proxy';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  // GitHub Pages project site 部署在仓库子路径（https://<user>.github.io/<repo>/）
-  // 优先读取 CI 传入的仓库名（见 .github/workflows/deploy.yml 的 VITE_BASE_PATH），
-  // 本地/未传入时回退到 'cnote-web'。若改仓库名，更新此默认值或依赖 CI 注入即可。
-  base: process.env.VITE_BASE_PATH || '/cnote-web/',
+  // 默认部署在站点根路径（Cloudflare Pages / Vercel / Workers Static Assets）。
+  // GitHub Pages project site 部署子路径时，由 CI 显式传入 VITE_BASE_PATH=/<repo>/ 覆盖。
+  base: process.env.VITE_BASE_PATH || '/',
   plugins: [
     vue(),
     AutoImport({
