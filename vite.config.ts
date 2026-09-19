@@ -11,6 +11,9 @@ import { googleOAuthProxy } from './vite-plugin-google-proxy';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
+  // GitHub Pages project site 部署在仓库子路径（https://<user>.github.io/cnote-web/）
+  // 若部署到 user/org 主页（仓库名 <user>.github.io）请改为 '/'
+  base: '/cnote-web/',
   plugins: [
     vue(),
     AutoImport({
