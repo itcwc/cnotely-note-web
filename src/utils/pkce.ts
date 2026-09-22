@@ -86,10 +86,10 @@ const GITHUB_TOKEN_URL =
 const GOOGLE_TOKEN_URL =
   import.meta.env.VITE_GOOGLE_TOKEN_PROXY_URL || "/api/google/token";
 
-// 部署子路径（Vite base）。Dev 为 '/'，GitHub Pages project site 为 '/cnote-web/'
+// 部署子路径（Vite base）。Dev 为 '/'，GitHub Pages project site 为 '/cnotely-note-web/'
 const BASE_URL = import.meta.env.BASE_URL || "/";
 
-// OAuth 回调完整路径（含部署子路径），如 https://<origin>/cnote-web/github-callback
+// OAuth 回调完整路径（含部署子路径），如 https://<origin>/cnotely-note-web/github-callback
 const callbackUrl = (path: string) => `${window.location.origin}${BASE_URL}${path}`;
 
 /** GitHub PKCE 登录：生成 verifier → 跳转授权页 */
