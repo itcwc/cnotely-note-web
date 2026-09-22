@@ -71,8 +71,8 @@ Cnotely 是 [cnotely](https://www.cnotely.com) 知识管理系统中的网页版
 
 ```bash
 # 1. 克隆项目
-git clone git@github.com:itcwc/cnote-web.git
-cd cnote-web
+git clone git@github.com:itcwc/cnotely-note-web.git
+cd cnotely-note-web
 
 # 2. 安装依赖
 npm install
@@ -110,7 +110,7 @@ cp .env.example .env.development
 ## 📁 项目结构
 
 ```
-cnote-web/
+cnotely-note-web/
 ├── public/                  # 静态资源
 ├── src/
 │   ├── api/                 # 云端 API（GitHub / Google Drive）
